@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projet Registre — Archive Restaurée</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <div class="noise"></div>
+  <div class="scanlines"></div>
+
+  <main id="app">
+    <section id="boot-screen" class="screen active">
+      <div class="boot-wrap">
+        <pre class="boot-text">PROJET REGISTRE / ENVIRONNEMENT RESTAURÉ
+SOURCE: C17-C18
+NIVEAU D'INTÉGRITÉ: 61%
+SECTIONS CORROMPUES: 19
+SESSIONS FONDATRICES DÉTECTÉES: 4
+
+Initialisation de l'environnement local...
+Montage de l'archive...
+Vérification des segments actifs...
+Chargement de l'interface de consultation...</pre>
+        <button id="enter-system" class="btn-primary">ENTRER</button>
+      </div>
+    </section>
+
+    <section id="login-screen" class="screen hidden">
+      <div class="login-panel panel">
+        <div class="panel-header">
+          <span>SESSION REGISTRE — ACCÈS FONDATEUR</span>
+          <span class="header-status">LOCAL</span>
+        </div>
+        <div class="panel-body">
+          <div class="login-left">
+            <h1>AUTHENTIFICATION</h1>
+            <p class="muted">Entrer un nom et un prénom associés à une session reconnue.</p>
+            <form id="login-form" autocomplete="off">
+              <label>Nom
+                <input type="text" id="lastName" placeholder="Nom" />
+              </label>
+              <label>Prénom
+                <input type="text" id="firstName" placeholder="Prénom" />
+              </label>
+              <button class="btn-primary" type="submit">OUVRIR SESSION</button>
+            </form>
+            <p id="login-message" class="login-message"></p>
+          </div>
+          <div class="login-right">
+            <div class="terminal-box">
+              <div>ARCHIVE RESTAURÉE : OUI</div>
+              <div>SUPPRESSION PARTIELLE : OUI</div>
+              <div>JOURNAUX DE SESSION : DISPONIBLES</div>
+              <div>FICHIERS PROTÉGÉS : NON RÉCUPÉRÉS</div>
+              <div>PROFILS ACTIFS : 4</div>
+            </div>
+            <div class="hint-box">
+              <h2>REMARQUE</h2>
+              <p>La restauration ne permet pas l'accès à un bureau complet. Seule l'interface interne du projet a été reconstruite.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="workspace-screen" class="screen hidden">
+      <div class="workspace-shell">
+        <aside class="sidebar panel">
+          <div class="panel-header">
+            <span>SESSION ACTIVE</span>
+          </div>
+          <div class="panel-body compact">
+            <div id="user-card" class="user-card"></div>
+            <nav class="nav-list">
+              <button class="nav-btn active" data-tab="overview">Vue générale</button>
+              <button class="nav-btn" data-tab="register">Registre miroir</button>
+              <button class="nav-btn" data-tab="observation">Observation</button>
+              <button class="nav-btn" data-tab="incidents">Incidents</button>
+              <button class="nav-btn" data-tab="synthesis">Synthèse</button>
+              <button class="nav-btn" data-tab="terminal">Terminal</button>
+            </nav>
+            <button id="logout-btn" class="btn-secondary">Fermer la session</button>
+          </div>
+        </aside>
+
+        <section class="content-area">
+          <div class="topbar panel">
+            <div class="panel-body compact topbar-inner">
+              <div>
+                <strong id="topbar-title">ARCHIVE RESTAURÉE</strong>
+                <span class="muted"> / consultation locale limitée</span>
+              </div>
+              <div class="topbar-badges">
+                <span class="badge">C17-C18</span>
+                <span class="badge warning">FINAL</span>
+              </div>
+            </div>
+          </div>
+
+          <div id="tab-overview" class="tab-view active"></div>
+          <div id="tab-register" class="tab-view"></div>
+          <div id="tab-observation" class="tab-view"></div>
+          <div id="tab-incidents" class="tab-view"></div>
+          <div id="tab-synthesis" class="tab-view"></div>
+          <div id="tab-terminal" class="tab-view"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="assets/app.js"></script>
+</body>
+</html>
