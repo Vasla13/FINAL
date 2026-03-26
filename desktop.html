@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJET REGISTRE - WORKSPACE</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/desktop.css">
+    <link rel="stylesheet" href="css/apps.css"> </head>
+<body>
+
+    <div id="os-container">
+        <div id="topbar">
+            <div class="topbar-left">
+                <span id="system-status">STATUT : SÉCURISÉ</span>
+            </div>
+            <div class="topbar-right">
+                <span id="current-user-display">UTILISATEUR : ...</span>
+                <span class="separator">|</span>
+                <span id="os-time">00:00:00</span>
+                <button id="logout-btn">DÉCONNEXION</button>
+            </div>
+        </div>
+
+        <div id="main-workspace">
+            <div id="sidebar">
+                <div class="sidebar-header">MODULES ACTIFS</div>
+                <button class="app-link" data-app="explorer">Explorateur</button>
+                <button class="app-link" data-app="messages">Messages</button>
+                <button class="app-link" data-app="logs">Journaux</button>
+                <button class="app-link" data-app="synthesis">Synthèse</button>
+                <button class="app-link" data-app="terminal">Terminal</button>
+            </div>
+
+            <div id="window-area">
+                </div>
+        </div>
+    </div>
+
+    <script src="js/data.js"></script>
+    <script src="js/system.js"></script> <script src="js/apps.js"></script> </body>
+</html>
