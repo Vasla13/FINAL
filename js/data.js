@@ -116,6 +116,8 @@ const vmData = {
                     { name: "LUCY BIRD", status: "PROFIL STANDARD", color: "#95a5a6", desc: "Banal. Variable d'ajustement structurelle." },
                     { name: "JUDE BIRD", status: "LEVIER DE CONTRÔLE", color: "#e67e22", desc: "Banal. Vulnérabilité détectée (dépendance fratrie/Lucy).\nRecommandation : Utilisable comme moyen de pression." },
                     { name: "RILEY GREEN", status: "AGENT DE COHÉSION", color: "#27ae60", desc: "Compétences moyennes. Indice de sympathie extrêmement élevé.\nRecommandation : Stabilisateur de groupe en cas de crise." },
+                    { name: "MICHEL MUCK", status: "POTENTIEL DE REPRISE", color: "#27ae60", desc: "Potentiel élevé pour reprise stratégique de la BNI.\nCompatibilité forte avec une fonction HDP.\nProbabilité de trahison : faible." },
+                    { name: "GERMAIN TOUSSAINT", status: "HDP COMPATIBLE", color: "#27ae60", desc: "Capacité de consolidation structurelle jugée supérieure.\nPotentiel confirmé pour devenir HDP de la BNI.\nProbabilité de trahison : faible." },
                     { name: "DUTCH COLEMAN", status: "VARIABLE X", color: "#e74c3c", desc: "Prévisibilité fluctuante. Arme à double tranchant.\nRecommandation : Isoler en cas de stress système majeur." },
                     { name: "TRINITY SINCLAIR", status: "ERREUR D'ANALYSE", color: "#c0392b", desc: "Individu inconnu.\nAbsence de fluctuations biométriques/organiques standards.\nDonnées illisibles par le modèle. RECALCUL IMPOSSIBLE." }
                 ] 

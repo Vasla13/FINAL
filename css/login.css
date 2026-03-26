@@ -1,39 +1,199 @@
 .login-container {
-    background-color: var(--surface-color);
-    border: 1px solid var(--border-color);
-    width: 400px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    position: relative;
+    width: min(92vw, 480px);
+    background: linear-gradient(180deg, rgba(8, 16, 23, 0.9) 0%, rgba(12, 22, 31, 0.84) 100%);
+    border: 1px solid rgba(158, 176, 190, 0.24);
+    box-shadow: var(--shadow-strong);
+    color: var(--text-inverse);
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    backdrop-filter: blur(14px);
+    animation: floatIn 0.7s ease;
+}
+
+.login-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(135deg, rgba(142, 193, 221, 0.12), transparent 30%),
+        linear-gradient(315deg, rgba(211, 163, 93, 0.1), transparent 28%);
 }
 
 .login-header {
-    background-color: var(--accent-color);
+    position: relative;
+    background: linear-gradient(180deg, rgba(19, 48, 65, 0.92) 0%, rgba(11, 24, 33, 0.88) 100%);
     color: var(--surface-color);
-    padding: 15px 20px;
-    border-bottom: 2px solid #2c3e50;
+    padding: 24px 26px 20px;
+    border-bottom: 1px solid rgba(158, 176, 190, 0.18);
 }
 
-.login-header h1 { font-size: 16px; font-weight: 600; letter-spacing: 1px; }
-.login-header h2 { font-size: 11px; font-weight: 400; opacity: 0.8; margin-top: 3px; letter-spacing: 0.5px; }
-.login-body { padding: 30px 20px; }
-.instruction { font-size: 13px; margin-bottom: 20px; color: var(--text-muted); }
-.input-group { display: flex; flex-direction: column; margin-bottom: 20px; }
-.input-group label { font-size: 12px; font-weight: 600; margin-bottom: 5px; }
-.input-group input { background-color: #fff; }
-.input-group input:focus { border-color: var(--accent-color); }
-button[type="submit"] { width: 100%; font-weight: 600; background-color: #e0e6ed; }
-button[type="submit"]:hover { background-color: #d1d8e0; }
-.error-message { color: var(--error-color); font-size: 12px; margin-top: 15px; min-height: 15px; text-align: center; }
-.login-footer { padding: 10px 20px; background-color: #ebeef1; border-top: 1px solid var(--border-color); font-size: 10px; color: var(--text-muted); text-align: right; font-family: var(--font-mono); }
+.login-header::after {
+    content: "ACCESS GATEWAY";
+    position: absolute;
+    top: 14px;
+    right: 26px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: rgba(211, 163, 93, 0.88);
+}
 
-/* Écran de démarrage (Boot) */
+.login-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.login-header h2 {
+    font-size: 11px;
+    font-weight: 500;
+    opacity: 0.85;
+    margin-top: 6px;
+    letter-spacing: 1.4px;
+}
+
+.login-body {
+    padding: 30px 26px 24px;
+}
+
+.instruction {
+    font-size: 12px;
+    margin-bottom: 24px;
+    color: rgba(242, 247, 251, 0.72);
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+}
+
+.input-group label {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: rgba(211, 163, 93, 0.88);
+    text-transform: uppercase;
+    letter-spacing: 1.3px;
+}
+
+.input-group input {
+    background: rgba(3, 9, 14, 0.74);
+    color: var(--text-inverse);
+    border: 1px solid rgba(142, 193, 221, 0.18);
+    border-radius: 8px;
+    padding: 12px 14px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+}
+
+.input-group input:focus {
+    border-color: rgba(142, 193, 221, 0.58);
+    box-shadow:
+        inset 0 0 0 1px rgba(142, 193, 221, 0.12),
+        0 0 0 4px rgba(142, 193, 221, 0.12);
+}
+
+button[type="submit"] {
+    width: 100%;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    border-radius: 10px;
+    border-color: #8b6231;
+    background: linear-gradient(180deg, #d8b277 0%, #ae7a3b 100%);
+    color: #101010;
+    box-shadow: 0 14px 28px rgba(97, 58, 18, 0.24);
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(180deg, #e3c38e 0%, #b68040 100%);
+}
+
+.error-message {
+    color: var(--error-color);
+    font-size: 12px;
+    margin-top: 16px;
+    min-height: 18px;
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+
+.login-footer {
+    padding: 12px 26px;
+    background: rgba(4, 10, 15, 0.56);
+    border-top: 1px solid rgba(158, 176, 190, 0.14);
+    font-size: 10px;
+    color: rgba(242, 247, 251, 0.55);
+    text-align: right;
+    font-family: var(--font-mono);
+    letter-spacing: 0.9px;
+}
+
 #boot-screen {
     position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background-color: #050505; color: #a4b0be;
-    font-family: var(--font-mono); font-size: 14px;
-    padding: 20px; z-index: 9999;
-    white-space: pre-wrap; line-height: 1.5;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background:
+        radial-gradient(circle at top left, rgba(142, 193, 221, 0.12), transparent 26%),
+        linear-gradient(180deg, #020405 0%, #05080b 50%, #030506 100%);
+    color: #c8d8e3;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    padding: 28px;
+    z-index: 9999;
+    white-space: pre-wrap;
+    line-height: 1.65;
+    letter-spacing: 0.3px;
+    text-shadow: 0 0 12px rgba(142, 193, 221, 0.15);
     transition: opacity 1s ease-out;
+}
+
+#boot-screen::before,
+#boot-screen::after {
+    content: "";
+    position: absolute;
+    pointer-events: none;
+}
+
+#boot-screen::before {
+    inset: 0;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.06) 0,
+        rgba(255, 255, 255, 0.06) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    opacity: 0.3;
+}
+
+#boot-screen::after {
+    width: 12px;
+    height: 18px;
+    right: 28px;
+    bottom: 28px;
+    background: #d3a35d;
+    box-shadow: 0 0 18px rgba(211, 163, 93, 0.45);
+    animation: blink 1s steps(1) infinite;
+}
+
+@media (max-width: 520px) {
+    .login-header::after {
+        position: static;
+        display: block;
+        margin-top: 8px;
+    }
+
+    .login-body,
+    .login-header,
+    .login-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
 }

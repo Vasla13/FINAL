@@ -14,13 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.getElementById('current-user-display').textContent = `UTILISATEUR : ${displayName.toUpperCase()} [${vmData[currentUser].role}]`;
 
-    function updateOSTime() {
-        const now = new Date();
-        document.getElementById('os-time').textContent = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-    }
-    setInterval(updateOSTime, 1000);
-    updateOSTime();
-
     document.getElementById('logout-btn').addEventListener('click', () => {
         sessionStorage.clear();
         document.getElementById('window-area').innerHTML = "";
@@ -31,20 +24,29 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function createWindow(appId, title, width = 600, height = 400) {
     const area = document.getElementById('window-area');
-    if (document.getElementById(`window-${appId}`)) {
-        bringToFront(document.getElementById(`window-${appId}`));
-        return null; 
+    if (!area) {
+        return null;
+    }
+
+    const existingWindow = document.getElementById(`window-${appId}`);
+    if (existingWindow) {
+        bringToFront(existingWindow);
+        return null;
     }
 
     const win = document.createElement('div');
     win.className = 'os-window';
     win.id = `window-${appId}`;
-    win.style.width = width + 'px';
-    win.style.height = height + 'px';
+    win.dataset.app = appId;
+
+    const clampedWidth = Math.min(width, Math.max(area.clientWidth - 32, 320));
+    const clampedHeight = Math.min(height, Math.max(area.clientHeight - 32, 240));
+    win.style.width = clampedWidth + 'px';
+    win.style.height = clampedHeight + 'px';
     
     const offset = (document.querySelectorAll('.os-window').length * 20) % 100;
-    win.style.top = (50 + offset) + 'px';
-    win.style.left = (150 + offset) + 'px';
+    win.style.top = Math.min(50 + offset, Math.max(area.clientHeight - clampedHeight - 16, 16)) + 'px';
+    win.style.left = Math.min(150 + offset, Math.max(area.clientWidth - clampedWidth - 16, 16)) + 'px';
 
     win.innerHTML = `
         <div class="window-header">
@@ -56,8 +58,12 @@ function createWindow(appId, title, width = 600, height = 400) {
 
     area.appendChild(win);
     bringToFront(win);
+    setAppButtonState(appId, true);
 
-    win.querySelector('.window-close').addEventListener('click', () => win.remove());
+    win.querySelector('.window-close').addEventListener('click', (event) => {
+        event.stopPropagation();
+        closeWindow(win);
+    });
     win.addEventListener('mousedown', () => bringToFront(win));
     makeDraggable(win);
 
@@ -67,31 +73,90 @@ function createWindow(appId, title, width = 600, height = 400) {
 function bringToFront(win) {
     zIndexCounter++;
     win.style.zIndex = zIndexCounter;
+    document.querySelectorAll('.os-window').forEach((windowEl) => windowEl.classList.remove('is-active'));
+    win.classList.add('is-active');
 }
 
 function makeDraggable(win) {
     const header = win.querySelector('.window-header');
-    let isDragging = false, startX, startY, startLeft, startTop;
+    let isDragging = false;
+    let activePointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let startLeft = 0;
+    let startTop = 0;
 
-    header.addEventListener('mousedown', (e) => {
+    header.addEventListener('pointerdown', onPointerDown);
+
+    function onPointerDown(e) {
+        if (e.button !== 0) return;
+        if (e.target.closest('.window-close')) return;
+
         isDragging = true;
+        activePointerId = e.pointerId;
         startX = e.clientX;
         startY = e.clientY;
         startLeft = parseInt(window.getComputedStyle(win).left, 10) || 0;
         startTop = parseInt(window.getComputedStyle(win).top, 10) || 0;
-        document.addEventListener('mousemove', onMouseMove);
-        document.addEventListener('mouseup', onMouseUp);
-    });
 
-    function onMouseMove(e) {
-        if (!isDragging) return;
-        win.style.left = startLeft + (e.clientX - startX) + 'px';
-        win.style.top = startTop + (e.clientY - startY) + 'px';
+        win.classList.add('is-dragging');
+        bringToFront(win);
+        header.setPointerCapture(activePointerId);
+        header.addEventListener('pointermove', onPointerMove);
+        header.addEventListener('pointerup', onPointerUp);
+        header.addEventListener('pointercancel', onPointerUp);
+        e.preventDefault();
     }
 
-    function onMouseUp() {
+    function onPointerMove(e) {
+        if (!isDragging || e.pointerId !== activePointerId) return;
+
+        const area = document.getElementById('window-area');
+        const maxLeft = Math.max(area.clientWidth - win.offsetWidth - 12, 12);
+        const maxTop = Math.max(area.clientHeight - win.offsetHeight - 12, 12);
+        const nextLeft = startLeft + (e.clientX - startX);
+        const nextTop = startTop + (e.clientY - startY);
+
+        win.style.left = Math.min(Math.max(12, nextLeft), maxLeft) + 'px';
+        win.style.top = Math.min(Math.max(12, nextTop), maxTop) + 'px';
+    }
+
+    function onPointerUp(e) {
+        if (e.pointerId !== activePointerId) return;
+
         isDragging = false;
-        document.removeEventListener('mousemove', onMouseMove);
-        document.removeEventListener('mouseup', onMouseUp);
+        win.classList.remove('is-dragging');
+
+        if (header.hasPointerCapture(activePointerId)) {
+            header.releasePointerCapture(activePointerId);
+        }
+
+        activePointerId = null;
+        header.removeEventListener('pointermove', onPointerMove);
+        header.removeEventListener('pointerup', onPointerUp);
+        header.removeEventListener('pointercancel', onPointerUp);
+    }
+}
+
+function closeWindow(win) {
+    const appId = win.dataset.app;
+    const wasActive = win.classList.contains('is-active');
+    win.remove();
+    setAppButtonState(appId, false);
+
+    if (wasActive) {
+        const remainingWindows = Array.from(document.querySelectorAll('.os-window'))
+            .sort((a, b) => Number(a.style.zIndex || 0) - Number(b.style.zIndex || 0));
+        const topWindow = remainingWindows[remainingWindows.length - 1];
+        if (topWindow) {
+            bringToFront(topWindow);
+        }
+    }
+}
+
+function setAppButtonState(appId, isOpen) {
+    const button = document.querySelector(`.app-link[data-app="${appId}"]`);
+    if (button) {
+        button.classList.toggle('is-open', isOpen);
     }
 }

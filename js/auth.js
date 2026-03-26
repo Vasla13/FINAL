@@ -40,14 +40,6 @@ document.addEventListener("DOMContentLoaded", () => {
         bootScreen.style.display = 'none';
     }
 
-    const timeDisplay = document.getElementById('system-time');
-    function updateTime() {
-        const now = new Date();
-        timeDisplay.textContent = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
-    }
-    setInterval(updateTime, 1000);
-    updateTime();
-
     const authorizedUsers = {
         "noah bennett": "n.bennett",
         "olivia reynolds": "o.reynolds",
