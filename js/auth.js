@@ -6,15 +6,25 @@ document.addEventListener("DOMContentLoaded", () => {
     let bootAudio = null;
 
     const bootSequence = [
-        "BIOS Revision 4.02 - BNI Core System",
-        "Checking Memory... 64000K OK",
-        "Mounting logical drives...",
-        "Drive C: [SYSTEM] Mounted.",
-        "Drive D: [ARCHIVE] Mounted.",
-        "Establishing secure connection to mainframe...",
-        "Connection Timeout. Offline mode engaged.",
-        "Loading PROJET REGISTRE UI...",
-        "Ready."
+        "BNI UEFI BIOS v0.9.12 (build 27.01)",
+        "CPU: x86_64  |  uCode: 0xC17C18",
+        "MEM: 16384MB  |  OK",
+        "PCI: scanning...",
+        "SATA0: PORT:C-17-C-18  |  READY",
+        "NVMe0: not present",
+        "USB: 2 device(s)",
+        "NET: PXE disabled",
+        "SEC: TPM present  |  OK",
+        "----",
+        "SELFTEST: [OK] timer",
+        "SELFTEST: [OK] rtc",
+        "SELFTEST: [OK] iommu",
+        "SELFTEST: [OK] vmm",
+        "----",
+        "INIT: loading microcode...",
+        "INIT: applying profile \"UEFI-C17-C18\"...",
+        "INIT: preparing VM context...",
+        "READY."
     ];
 
     let lineIndex = 0;
