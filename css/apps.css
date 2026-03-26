@@ -292,7 +292,8 @@
 }
 
 .doc-view {
-    max-width: 820px;
+    width: min(100%, 980px);
+    max-width: 980px;
     margin: 26px auto;
     padding: 36px 40px;
     background: rgba(252, 253, 254, 0.98);

@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if(contentContainer) renderSplitView(contentContainer, userData.logs, 'id', 'date', 'content');
                 break;
             case 'synthesis':
-                contentContainer = createWindow('synthesis', `Aperçu Document - ${userData.synthesis.title}`, 650, 500);
+                contentContainer = createWindow('synthesis', `Aperçu Document - ${userData.synthesis.title}`, 920, 680);
                 if(contentContainer) renderDocument(contentContainer, userData.synthesis);
                 break;
             case 'terminal':
@@ -288,7 +288,18 @@ Tapez 'help' pour la liste des commandes.
         let targetWidth = 720;
         let targetHeight = 460;
 
-        if (type === 'corrupt' || type === 'deleted') {
+        if (type === 'document' || type === 'spreadsheet' || type === 'markdown') {
+            if (normalizedLength <= 180) {
+                targetWidth = 860;
+                targetHeight = 520;
+            } else if (normalizedLength <= 500) {
+                targetWidth = 920;
+                targetHeight = 620;
+            } else {
+                targetWidth = 980;
+                targetHeight = 700;
+            }
+        } else if (type === 'corrupt' || type === 'deleted') {
             targetWidth = 600;
             targetHeight = 360;
         } else if (normalizedLength <= 120) {
