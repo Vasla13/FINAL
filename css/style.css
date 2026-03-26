@@ -1,5 +1,4 @@
 :root {
-    /* Palette froide et administrative */
     --bg-color: #e2e6e9;
     --surface-color: #f5f6fa;
     --border-color: #95a5a6;
@@ -9,29 +8,23 @@
     --error-color: #c0392b;
     --terminal-bg: #1e272e;
     --terminal-text: #d2dae2;
-    
     --font-ui: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     --font-mono: 'Consolas', 'Courier New', Courier, monospace;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     background-color: var(--bg-color);
     color: var(--text-main);
     font-family: var(--font-ui);
     height: 100vh;
-    overflow: hidden; /* Empêche le scroll, c'est un OS, pas un site web */
+    overflow: hidden;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* Boutons et Inputs génériques */
 input, button {
     font-family: var(--font-ui);
     border: 1px solid var(--border-color);
@@ -46,6 +39,4 @@ button {
     transition: background-color 0.2s;
 }
 
-button:hover {
-    background-color: #e0e0e0;
-}
+button:hover { background-color: #e0e0e0; }

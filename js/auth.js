@@ -1,10 +1,46 @@
 document.addEventListener("DOMContentLoaded", () => {
+    const bootScreen = document.getElementById('boot-screen');
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
     const errorMessage = document.getElementById('errorMessage');
-    const timeDisplay = document.getElementById('system-time');
 
-    // Mise à jour de l'heure système dans le footer
+    const bootSequence = [
+        "BIOS Revision 4.02 - BNI Core System",
+        "Checking Memory... 64000K OK",
+        "Mounting logical drives...",
+        "Drive C: [SYSTEM] Mounted.",
+        "Drive D: [ARCHIVE] Mounted.",
+        "Establishing secure connection to mainframe...",
+        "Connection Timeout. Offline mode engaged.",
+        "Loading PROJET REGISTRE UI...",
+        "Ready."
+    ];
+
+    let lineIndex = 0;
+    function typeBootLines() {
+        if (lineIndex < bootSequence.length) {
+            bootScreen.textContent += bootSequence[lineIndex] + "\n";
+            lineIndex++;
+            setTimeout(typeBootLines, Math.random() * 200 + 100); 
+        } else {
+            setTimeout(() => {
+                bootScreen.style.opacity = '0';
+                setTimeout(() => {
+                    bootScreen.style.display = 'none';
+                    usernameInput.focus();
+                }, 1000);
+            }, 800);
+        }
+    }
+    
+    // Si pas encore connecté, lancer le boot
+    if (!sessionStorage.getItem('registre_active_user')) {
+        typeBootLines();
+    } else {
+        bootScreen.style.display = 'none';
+    }
+
+    const timeDisplay = document.getElementById('system-time');
     function updateTime() {
         const now = new Date();
         timeDisplay.textContent = now.toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
@@ -12,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(updateTime, 1000);
     updateTime();
 
-    // Liste stricte des utilisateurs autorisés
     const authorizedUsers = {
         "noah bennett": "n.bennett",
         "olivia reynolds": "o.reynolds",
@@ -23,23 +58,15 @@ document.addEventListener("DOMContentLoaded", () => {
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         errorMessage.textContent = "";
-        
         const rawInput = usernameInput.value.trim().toLowerCase();
 
         if (authorizedUsers[rawInput]) {
-            // Sauvegarde de l'utilisateur dans la session de l'ordinateur
             sessionStorage.setItem('registre_active_user', authorizedUsers[rawInput]);
             sessionStorage.setItem('registre_display_name', usernameInput.value.trim());
-            
-            // Simulation d'un léger délai de traitement serveur
             errorMessage.style.color = "#27ae60";
             errorMessage.textContent = "Habilitation confirmée. Chargement du profil...";
-            
-            setTimeout(() => {
-                window.location.href = "desktop.html";
-            }, 1200);
+            setTimeout(() => { window.location.href = "desktop.html"; }, 1200);
         } else {
-            // Rejet froid et administratif
             errorMessage.style.color = "var(--error-color)";
             errorMessage.textContent = "Erreur : Identifiant inconnu ou profil archivé.";
             usernameInput.value = "";
