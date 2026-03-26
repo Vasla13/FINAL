@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-function createWindow(appId, title, width = 600, height = 400) {
+function createWindow(appId, title, width = 600, height = 400, minWidth = 340, minHeight = 250) {
     const area = document.getElementById('window-area');
     if (!area) {
         return null;
@@ -39,8 +39,15 @@ function createWindow(appId, title, width = 600, height = 400) {
     win.id = `window-${appId}`;
     win.dataset.app = appId;
 
-    const clampedWidth = Math.min(width, Math.max(area.clientWidth - 32, 320));
-    const clampedHeight = Math.min(height, Math.max(area.clientHeight - 32, 240));
+    const availableWidth = Math.max(area.clientWidth - 24, 320);
+    const availableHeight = Math.max(area.clientHeight - 24, 240);
+    const effectiveMinWidth = Math.min(Math.max(minWidth, 340), availableWidth);
+    const effectiveMinHeight = Math.min(Math.max(minHeight, 250), availableHeight);
+    const clampedWidth = Math.min(Math.max(width, effectiveMinWidth), availableWidth);
+    const clampedHeight = Math.min(Math.max(height, effectiveMinHeight), availableHeight);
+
+    win.style.minWidth = effectiveMinWidth + 'px';
+    win.style.minHeight = effectiveMinHeight + 'px';
     win.style.width = clampedWidth + 'px';
     win.style.height = clampedHeight + 'px';
     

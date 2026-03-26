@@ -12,29 +12,34 @@ document.addEventListener("DOMContentLoaded", () => {
 
         switch(appId) {
             case 'explorer':
-                contentContainer = createWindow('explorer', `${userData.rootFolder}`, 760, 500);
+                contentContainer = createWindow('explorer', `${userData.rootFolder}`, 880, 560, 820, 500);
                 if(contentContainer) renderSplitView(contentContainer, userData.explorer, 'name', 'type', 'content');
                 break;
             case 'messages':
-                contentContainer = createWindow('messages', `Messagerie Interne - ${currentUser}`, 650, 400);
+                contentContainer = createWindow('messages', `Messagerie Interne - ${currentUser}`, 800, 520, 740, 480);
                 if(contentContainer) renderSplitView(contentContainer, userData.messages, 'from', 'date', 'content', true);
                 break;
             case 'logs':
-                contentContainer = createWindow('logs', `Journaux d'Activité`, 600, 350);
+                contentContainer = createWindow('logs', `Journaux d'Activité`, 760, 460, 700, 420);
                 if(contentContainer) renderSplitView(contentContainer, userData.logs, 'id', 'date', 'content');
                 break;
             case 'synthesis':
-                contentContainer = createWindow('synthesis', `Aperçu Document - ${userData.synthesis.title}`, 920, 680);
+                contentContainer = createWindow('synthesis', `Aperçu Document - ${userData.synthesis.title}`, 980, 720, 940, 680);
                 if(contentContainer) renderDocument(contentContainer, userData.synthesis);
                 break;
             case 'terminal':
-                contentContainer = createWindow('terminal', `C:\\Windows\\System32\\cmd.exe - Interface Restreinte`, 550, 350);
+                contentContainer = createWindow('terminal', `C:\\Windows\\System32\\cmd.exe - Interface Restreinte`, 780, 540, 720, 500);
                 if(contentContainer) renderTerminal(contentContainer, userData);
                 break;
         }
     }
 
     function renderSplitView(container, dataArray, titleKey, metaKey, contentKey, isMessage = false) {
+        const appId = container.closest('.os-window')?.dataset.app || '';
+        if (appId === 'explorer') setWindowMinimumSize(container, 820, 500);
+        if (appId === 'messages') setWindowMinimumSize(container, 740, 480);
+        if (appId === 'logs') setWindowMinimumSize(container, 700, 420);
+
         container.innerHTML = `
             <div class="split-view">
                 <div class="list-pane"></div>
@@ -234,6 +239,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderDocument(container, synthData) {
+        setWindowMinimumSize(container, 940, 680);
+        resizeWindow(container, 980, 720);
         container.innerHTML = `
             <div class="doc-view">
                 <div class="doc-kicker">Aperçu document</div>
@@ -255,6 +262,21 @@ document.addEventListener("DOMContentLoaded", () => {
 Droit d'accès : ADMINISTRATIF.
 Tapez 'help' pour la liste des commandes.
 </div>
+            <div class="terminal-human-gate" hidden>
+                <div class="terminal-gate-header">
+                    <div>
+                        <div class="terminal-gate-kicker">PROTOCOLE H-9</div>
+                        <div class="terminal-gate-title">VERROU ANALOGIQUE HUMAIN</div>
+                    </div>
+                    <button type="button" class="terminal-gate-replay">Rejouer la séquence</button>
+                </div>
+                <div class="terminal-gate-copy">
+                    Archive cachée isolée du contrôle REGIS. Observez la séquence lumineuse, puis cliquez les cellules dans le même ordre.
+                </div>
+                <div class="terminal-gate-track" aria-hidden="true"></div>
+                <div class="terminal-human-grid" role="group" aria-label="Verification humaine"></div>
+                <div class="terminal-gate-status">Initialisation du verrou humain...</div>
+            </div>
             <div class="terminal-input-line">
                 <span class="terminal-prompt">></span>
                 <input type="text" class="terminal-input" autocomplete="off" spellcheck="false" placeholder="Entrer une commande">
@@ -263,15 +285,240 @@ Tapez 'help' pour la liste des commandes.
 
         const outputDiv = container.querySelector('.terminal-output');
         const inputField = container.querySelector('.terminal-input');
+        const humanGate = container.querySelector('.terminal-human-gate');
+        const humanGrid = container.querySelector('.terminal-human-grid');
+        const gateTrack = container.querySelector('.terminal-gate-track');
+        const gateStatus = container.querySelector('.terminal-gate-status');
+        const replayButton = container.querySelector('.terminal-gate-replay');
+        const gridLabels = ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3'];
+        const truthGateState = {
+            unlocked: false,
+            sequence: [],
+            progress: 0,
+            isPlaying: false,
+            buttons: [],
+            timers: []
+        };
 
+        humanGrid.innerHTML = gridLabels.map((label, index) => `
+            <button type="button" class="human-node" data-node-index="${index}" disabled>
+                <span class="human-node-id">${label}</span>
+                <span class="human-node-signal">idle</span>
+            </button>
+        `).join('');
+        truthGateState.buttons = Array.from(humanGrid.querySelectorAll('.human-node'));
+
+        setWindowMinimumSize(container, 720, 500);
+        resizeWindow(container, 780, 540);
         inputField.focus();
         container.addEventListener('click', () => inputField.focus());
+        replayButton.addEventListener('click', () => startTruthGate(true));
+        humanGrid.addEventListener('click', (event) => {
+            const button = event.target.closest('.human-node');
+            if (!button || truthGateState.isPlaying || !truthGateState.sequence.length) return;
+            handleTruthGateInput(Number(button.dataset.nodeIndex));
+        });
+
+        function appendOutput(text) {
+            outputDiv.textContent += `${text}\n`;
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        function clearTruthGateTimers() {
+            truthGateState.timers.forEach((timerId) => window.clearTimeout(timerId));
+            truthGateState.timers = [];
+        }
+
+        function updateTruthGateTrack() {
+            gateTrack.innerHTML = truthGateState.sequence.map((_, index) => {
+                let stateClass = '';
+                if (index < truthGateState.progress) stateClass = ' is-complete';
+                else if (!truthGateState.isPlaying && index === truthGateState.progress) stateClass = ' is-current';
+                return `<span class="terminal-gate-step${stateClass}">${index + 1}</span>`;
+            }).join('');
+        }
+
+        function setTruthGateEnabled(isEnabled) {
+            truthGateState.buttons.forEach((button) => {
+                button.disabled = !isEnabled;
+            });
+        }
+
+        function resetTruthGateVisuals() {
+            humanGate.classList.remove('is-failed', 'is-success');
+            truthGateState.buttons.forEach((button) => {
+                button.classList.remove('is-flash', 'is-correct', 'is-error');
+                const signal = button.querySelector('.human-node-signal');
+                if (signal) signal.textContent = 'idle';
+            });
+        }
+
+        function flashTruthGateButton(index, className, signalText, duration = 340) {
+            const button = truthGateState.buttons[index];
+            if (!button) return;
+
+            const signal = button.querySelector('.human-node-signal');
+            button.classList.add(className);
+            if (signal) signal.textContent = signalText;
+
+            const timerId = window.setTimeout(() => {
+                button.classList.remove(className);
+                if (!button.classList.contains('is-correct') && !button.classList.contains('is-error') && signal) {
+                    signal.textContent = truthGateState.isPlaying ? 'scan' : 'idle';
+                }
+            }, duration);
+
+            truthGateState.timers.push(timerId);
+        }
+
+        function generateTruthGateSequence(length = 4) {
+            const sequence = [];
+            while (sequence.length < length) {
+                const next = Math.floor(Math.random() * gridLabels.length);
+                if (sequence[sequence.length - 1] !== next) sequence.push(next);
+            }
+            return sequence;
+        }
+
+        function revealTruthArchive() {
+            truthGateState.unlocked = true;
+            truthGateState.isPlaying = false;
+            truthGateState.progress = truthGateState.sequence.length;
+            humanGate.classList.remove('is-failed');
+            humanGate.classList.add('is-success');
+            gateStatus.textContent = "Empreinte humaine validée. Déverrouillage de l'archive truth...";
+            updateTruthGateTrack();
+            setTruthGateEnabled(false);
+            window.registreAudio?.play('authSuccess', {
+                volume: 0.24,
+                playbackRate: 0.88
+            });
+            setWindowMinimumSize(container, 980, 720);
+            resizeWindow(container, 1020, 760);
+
+            const revealTimer = window.setTimeout(() => {
+                humanGate.hidden = true;
+                appendOutput(userData.terminal.truth || "Archive introuvable.");
+                inputField.focus();
+            }, 520);
+            truthGateState.timers.push(revealTimer);
+        }
+
+        function failTruthGate() {
+            truthGateState.isPlaying = false;
+            truthGateState.progress = 0;
+            humanGate.classList.remove('is-success');
+            humanGate.classList.add('is-failed');
+            gateStatus.textContent = "Sequence invalide. Les modeles REGIS imitent mal la motricite humaine. Relancez.";
+            setTruthGateEnabled(false);
+            updateTruthGateTrack();
+            window.registreAudio?.play('authError', {
+                volume: 0.18,
+                playbackRate: 0.92
+            });
+            appendOutput("[PROTOCOLE H-9] Echec de verification. Cliquez sur 'Rejouer la sequence' ou retapez 'truth'.");
+        }
+
+        function playTruthGateSequence() {
+            clearTruthGateTimers();
+            resetTruthGateVisuals();
+            truthGateState.progress = 0;
+            truthGateState.isPlaying = true;
+            setTruthGateEnabled(false);
+            gateStatus.textContent = "Observation requise. Memorisez la sequence lumineuse.";
+            updateTruthGateTrack();
+
+            truthGateState.sequence.forEach((nodeIndex, stepIndex) => {
+                const startDelay = 320 + (stepIndex * 540);
+                const flashTimer = window.setTimeout(() => {
+                    const button = truthGateState.buttons[nodeIndex];
+                    const signal = button?.querySelector('.human-node-signal');
+                    if (signal) signal.textContent = 'pulse';
+                    flashTruthGateButton(nodeIndex, 'is-flash', 'pulse', 320);
+                    window.registreAudio?.play('uiSelect', {
+                        volume: 0.05,
+                        playbackRate: 0.72 + (stepIndex * 0.03)
+                    });
+                }, startDelay);
+                truthGateState.timers.push(flashTimer);
+            });
+
+            const unlockTimer = window.setTimeout(() => {
+                truthGateState.isPlaying = false;
+                setTruthGateEnabled(true);
+                gateStatus.textContent = "Mode reception actif. Reproduisez la sequence pour prouver une presence humaine.";
+                truthGateState.buttons.forEach((button) => {
+                    const signal = button.querySelector('.human-node-signal');
+                    if (signal) signal.textContent = 'ready';
+                });
+                updateTruthGateTrack();
+            }, 320 + (truthGateState.sequence.length * 540));
+            truthGateState.timers.push(unlockTimer);
+        }
+
+        function startTruthGate(isReplay = false) {
+            if (!userData.terminal.truth) {
+                appendOutput("Commande non reconnue. Tentative consignee.");
+                return;
+            }
+
+            if (truthGateState.unlocked) {
+                resizeWindow(container, 940, 660);
+                appendOutput(userData.terminal.truth);
+                return;
+            }
+
+            clearTruthGateTimers();
+            truthGateState.sequence = generateTruthGateSequence();
+            truthGateState.progress = 0;
+            humanGate.hidden = false;
+            humanGate.classList.remove('is-failed', 'is-success');
+            gateStatus.textContent = "Initialisation du protocole humain...";
+            replayButton.disabled = false;
+            setWindowMinimumSize(container, 980, 720);
+            resizeWindow(container, 1020, 760);
+
+            if (isReplay) appendOutput("[PROTOCOLE H-9] Sequence reinitialisee.");
+            else appendOutput("[VERROU IA] Archive truth detectee. Validation humaine analogique requise.");
+
+            updateTruthGateTrack();
+            playTruthGateSequence();
+        }
+
+        function handleTruthGateInput(index) {
+            if (truthGateState.isPlaying || truthGateState.progress >= truthGateState.sequence.length) return;
+
+            const expectedIndex = truthGateState.sequence[truthGateState.progress];
+            if (index !== expectedIndex) {
+                const wrongButton = truthGateState.buttons[index];
+                wrongButton?.classList.add('is-error');
+                const wrongSignal = wrongButton?.querySelector('.human-node-signal');
+                if (wrongSignal) wrongSignal.textContent = 'fault';
+                failTruthGate();
+                return;
+            }
+
+            const button = truthGateState.buttons[index];
+            button?.classList.add('is-correct');
+            const signal = button?.querySelector('.human-node-signal');
+            if (signal) signal.textContent = 'ok';
+            truthGateState.progress += 1;
+            updateTruthGateTrack();
+            window.registreAudio?.play('uiSelect', {
+                volume: 0.08,
+                playbackRate: 0.95 + (truthGateState.progress * 0.03)
+            });
+
+            if (truthGateState.progress >= truthGateState.sequence.length) {
+                revealTruthArchive();
+            }
+        }
 
         inputField.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const command = inputField.value.trim().toLowerCase();
                 inputField.value = "";
-                outputDiv.textContent += `\n> ${command}\n`;
+                appendOutput(`\n> ${command}`);
 
                 let response = "";
                 if (command === "help") response = "Commandes disponibles : list, open [fichier], status, users, logs";
@@ -280,21 +527,35 @@ Tapez 'help' pour la liste des commandes.
                 else if (command === "users") response = userData.terminal.users || "Accès restreint.";
                 else if (command === "list") response = userData.terminal.list || "Utilisez l'Explorateur pour lister l'arborescence.";
                 else if (command === "truth") {
-                    response = userData.terminal.truth || "Commande non reconnue. Tentative consignée.";
+                    startTruthGate();
                 }
                 else if (command.startsWith("open")) response = "Erreur : Ouverture via terminal restreinte. Utilisez l'Explorateur.";
                 else if (command !== "") response = "Commande non reconnue. Tentative consignée.";
 
-                if (response) outputDiv.textContent += `${response}\n`;
-                outputDiv.scrollTop = outputDiv.scrollHeight;
+                if (response) appendOutput(response);
             }
         });
+    }
+
+    function setWindowMinimumSize(container, minWidth, minHeight) {
+        const win = container.closest('.os-window');
+        const area = document.getElementById('window-area');
+        if (!win || !area) return;
+
+        const availableWidth = Math.max(area.clientWidth - 24, 320);
+        const availableHeight = Math.max(area.clientHeight - 24, 240);
+        const clampedMinWidth = Math.min(Math.max(minWidth, 340), availableWidth);
+        const clampedMinHeight = Math.min(Math.max(minHeight, 250), availableHeight);
+
+        win.style.minWidth = clampedMinWidth + 'px';
+        win.style.minHeight = clampedMinHeight + 'px';
     }
 
     function expandWindowForSlideshow(container) {
         const area = document.getElementById('window-area');
         if (!area) return;
 
+        setWindowMinimumSize(container, 980, 700);
         const targetWidth = Math.min(Math.max(Math.floor(area.clientWidth * 0.92), 960), area.clientWidth - 24);
         const targetHeight = Math.min(Math.max(Math.floor(area.clientHeight * 0.9), 680), area.clientHeight - 24);
         resizeWindow(container, targetWidth, targetHeight);
@@ -359,8 +620,12 @@ Tapez 'help' pour la liste des commandes.
         const area = document.getElementById('window-area');
         if (!win || !area) return;
 
-        const clampedWidth = Math.min(Math.max(targetWidth, 340), area.clientWidth - 24);
-        const clampedHeight = Math.min(Math.max(targetHeight, 250), area.clientHeight - 24);
+        const availableWidth = Math.max(area.clientWidth - 24, 320);
+        const availableHeight = Math.max(area.clientHeight - 24, 240);
+        const minWidth = Math.min(parseInt(win.style.minWidth, 10) || 340, availableWidth);
+        const minHeight = Math.min(parseInt(win.style.minHeight, 10) || 250, availableHeight);
+        const clampedWidth = Math.min(Math.max(targetWidth, minWidth), availableWidth);
+        const clampedHeight = Math.min(Math.max(targetHeight, minHeight), availableHeight);
 
         const currentLeft = parseInt(win.style.left, 10) || 12;
         const currentTop = parseInt(win.style.top, 10) || 12;
