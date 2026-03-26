@@ -454,22 +454,21 @@ document.addEventListener("DOMContentLoaded", () => {
         container.innerHTML = `
             <div class="camera-feed-window">
                 <div class="camera-feed-topbar">
-                    <span>BNI / FLUX THERMIQUE / STATION_02</span>
-                    <span>CANAL 4B</span>
+                    <span>BNI / CAMERA DE SECURITE / STATION_02</span>
+                    <span>CANAL 4B // HORS SERVICE</span>
                 </div>
-                <div class="camera-feed-screen">
-                    <div class="camera-room-frame">
-                        <div class="camera-room-wall camera-room-wall--left"></div>
-                        <div class="camera-room-wall camera-room-wall--right"></div>
-                        <div class="camera-room-floor"></div>
-                        <div class="camera-room-door"></div>
+                <div class="camera-feed-screen camera-feed-screen--lost">
+                    <div class="camera-failure-noise"></div>
+                    <div class="camera-failure-snow"></div>
+                    <div class="camera-failure-bar"></div>
+                    <div class="camera-failure-vignette"></div>
+                    <div class="camera-lost-center">
+                        <div class="camera-lost-kicker">LIAISON VIDEO INTERRUPTED</div>
+                        <div class="camera-lost-title">SIGNAL LOST</div>
+                        <div class="camera-lost-copy">Flux inexploitable. Perte du port optique ou obturateur recouvert. Derniere tentative de synchronisation : 29/06/2032 - 03:14.</div>
                     </div>
-                    <div class="camera-heat camera-heat--one"></div>
-                    <div class="camera-heat camera-heat--two"></div>
-                    <div class="camera-static"></div>
-                    <div class="camera-scanline"></div>
-                    <div class="camera-feed-label">Aucune présence détectée.</div>
-                    <div class="camera-feed-timestamp">THERMAL FEED / ARCHIVE LOOP / 03:14:22</div>
+                    <div class="camera-feed-label">Image perdue. Activite parasite detectee sur lentille.</div>
+                    <div class="camera-feed-timestamp">ARCHIVE / NO INPUT / 03:14:22</div>
                 </div>
             </div>
         `;

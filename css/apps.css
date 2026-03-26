@@ -724,12 +724,110 @@ body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
         linear-gradient(180deg, rgba(11, 18, 24, 0.98) 0%, rgba(5, 9, 12, 0.98) 100%);
 }
 
+.camera-feed-screen--lost {
+    background:
+        radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 44%),
+        linear-gradient(180deg, rgba(3, 4, 5, 0.99) 0%, rgba(0, 0, 0, 1) 100%);
+}
+
 .camera-room-frame,
 .camera-static,
 .camera-scanline,
 .camera-feed-label,
 .camera-feed-timestamp {
     position: absolute;
+}
+
+.camera-failure-noise,
+.camera-failure-snow,
+.camera-failure-bar,
+.camera-failure-vignette,
+.camera-lost-center {
+    position: absolute;
+}
+
+.camera-failure-noise,
+.camera-failure-snow,
+.camera-failure-vignette {
+    inset: 0;
+}
+
+.camera-failure-noise {
+    background:
+        repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.04) 0,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 4px
+        );
+    mix-blend-mode: screen;
+    opacity: 0.22;
+}
+
+.camera-failure-snow {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.24) 0, transparent 1px),
+        radial-gradient(circle at 70% 20%, rgba(255, 255, 255, 0.2) 0, transparent 1px),
+        radial-gradient(circle at 46% 76%, rgba(255, 255, 255, 0.22) 0, transparent 1px),
+        radial-gradient(circle at 82% 66%, rgba(255, 255, 255, 0.18) 0, transparent 1px),
+        radial-gradient(circle at 10% 82%, rgba(255, 255, 255, 0.2) 0, transparent 1px),
+        radial-gradient(circle at 32% 54%, rgba(255, 255, 255, 0.16) 0, transparent 1px),
+        radial-gradient(circle at 62% 48%, rgba(255, 255, 255, 0.18) 0, transparent 1px),
+        radial-gradient(circle at 88% 34%, rgba(255, 255, 255, 0.16) 0, transparent 1px);
+    background-size: 90px 70px, 120px 88px, 100px 80px, 140px 110px, 96px 78px, 110px 82px, 130px 92px, 150px 120px;
+    opacity: 0.4;
+    animation: cameraSnow 0.22s steps(2, end) infinite;
+}
+
+.camera-failure-bar {
+    left: -10%;
+    right: -10%;
+    top: 38%;
+    height: 4px;
+    background: linear-gradient(90deg, transparent 0%, rgba(237, 241, 245, 0.62) 50%, transparent 100%);
+    box-shadow:
+        0 0 14px rgba(255, 255, 255, 0.18),
+        0 0 34px rgba(116, 191, 255, 0.08);
+    animation: cameraFailureBar 4.6s linear infinite;
+}
+
+.camera-failure-vignette {
+    background: radial-gradient(circle at center, transparent 46%, rgba(0, 0, 0, 0.62) 100%);
+}
+
+.camera-lost-center {
+    top: 50%;
+    left: 50%;
+    width: min(72%, 520px);
+    transform: translate(-50%, -56%);
+    text-align: center;
+    z-index: 2;
+}
+
+.camera-lost-kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: rgba(255, 202, 121, 0.72);
+    margin-bottom: 14px;
+}
+
+.camera-lost-title {
+    font-size: clamp(44px, 8vw, 82px);
+    line-height: 0.95;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    color: rgba(241, 245, 248, 0.96);
+    text-shadow: 0 0 28px rgba(255, 255, 255, 0.08);
+    margin-bottom: 16px;
+}
+
+.camera-lost-copy {
+    line-height: 1.75;
+    color: rgba(211, 220, 227, 0.62);
+    max-width: 480px;
+    margin: 0 auto;
 }
 
 .camera-room-frame {
@@ -938,6 +1036,35 @@ body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
     }
 }
 
+@keyframes cameraSnow {
+    0% {
+        opacity: 0.18;
+        transform: translate3d(0, 0, 0);
+    }
+    50% {
+        opacity: 0.26;
+        transform: translate3d(1px, -1px, 0);
+    }
+    100% {
+        opacity: 0.2;
+        transform: translate3d(-1px, 1px, 0);
+    }
+}
+
+@keyframes cameraFailureBar {
+    0% {
+        transform: translateY(-180px);
+        opacity: 0;
+    }
+    12% {
+        opacity: 0.9;
+    }
+    100% {
+        transform: translateY(360px);
+        opacity: 0;
+    }
+}
+
 @keyframes cameraScan {
     0% {
         transform: translateY(-140%);
@@ -946,6 +1073,7 @@ body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
         transform: translateY(520%);
     }
 }
+
 
 @keyframes regisRain {
     0% {
