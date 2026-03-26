@@ -41,6 +41,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
+    function updateLoadingState() {
+        document.body.classList.toggle('is-app-loading', pendingLaunches.size > 0);
+    }
+
     sidebar?.addEventListener('click', (event) => {
         const button = event.target.closest('.app-link');
         if (!button) return;
@@ -69,9 +73,11 @@ document.addEventListener("DOMContentLoaded", () => {
         if (delayMs > 0) {
             pendingLaunches.add(appId);
             setAppPendingState(appId, true);
+            updateLoadingState();
             window.setTimeout(() => {
                 pendingLaunches.delete(appId);
                 setAppPendingState(appId, false);
+                updateLoadingState();
                 openApp(appId);
             }, delayMs);
             return;
@@ -124,6 +130,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderSplitView(container, dataArray, titleKey, metaKey, contentKey, isMessage = false) {
         const appId = container.closest('.os-window')?.dataset.app || '';
+        const win = container.closest('.os-window');
         if (appId === 'explorer') setWindowMinimumSize(container, 820, 500);
         if (appId === 'messages') setWindowMinimumSize(container, 740, 480);
         if (appId === 'logs') setWindowMinimumSize(container, 700, 420);
@@ -139,11 +146,22 @@ document.addEventListener("DOMContentLoaded", () => {
         const listPane = container.querySelector('.list-pane');
         const detailPane = container.querySelector('.detail-pane');
         const presentation = prepareSplitViewItems(dataArray, { appId, titleKey, metaKey, isMessage });
+        const useMechanicalReveal = currentUser === 'n.bennett' && appId === 'explorer';
+        const revealTimers = [];
         let slideshowController = null;
         let firstSelect = null;
+        let hasInitialSelection = false;
 
         listPane.classList.toggle('is-strict-profile', presentation.mode === 'strict');
         listPane.classList.toggle('is-chaotic-profile', presentation.mode === 'chaotic');
+
+        if (useMechanicalReveal && win) {
+            const previousCleanup = typeof win._cleanup === 'function' ? win._cleanup : null;
+            win._cleanup = () => {
+                revealTimers.forEach((timerId) => window.clearTimeout(timerId));
+                if (previousCleanup) previousCleanup();
+            };
+        }
 
         container.addEventListener('keydown', (event) => {
             if (!slideshowController) return;
@@ -157,7 +175,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        presentation.items.forEach((entry) => {
+        presentation.items.forEach((entry, index) => {
             const item = entry.item;
             const div = document.createElement('div');
             div.className = `list-item type-${item.type || 'entry'}${entry.extraClasses ? ` ${entry.extraClasses.join(' ')}` : ''}`;
@@ -320,17 +338,35 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             });
 
-            listPane.appendChild(div);
+            if (useMechanicalReveal) {
+                div.classList.add('is-mechanical');
+                const revealTimer = window.setTimeout(() => {
+                    listPane.appendChild(div);
+                    const visibleTimer = window.setTimeout(() => {
+                        div.classList.add('is-visible');
+                    }, 18);
+                    revealTimers.push(visibleTimer);
 
-            if (!firstSelect) {
-                firstSelect = () => {
-                    selectItem(false);
-                    div.focus();
-                };
+                    if (!hasInitialSelection) {
+                        hasInitialSelection = true;
+                        selectItem(false);
+                        div.focus();
+                    }
+                }, index * 58);
+                revealTimers.push(revealTimer);
+            } else {
+                listPane.appendChild(div);
+
+                if (!firstSelect) {
+                    firstSelect = () => {
+                        selectItem(false);
+                        div.focus();
+                    };
+                }
             }
         });
 
-        if (firstSelect) {
+        if (!useMechanicalReveal && firstSelect) {
             firstSelect();
         }
     }

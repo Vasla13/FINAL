@@ -112,57 +112,201 @@
     background: linear-gradient(180deg, rgba(244, 248, 251, 0.98) 0%, rgba(230, 236, 240, 0.96) 100%);
 }
 
+body[data-profile="n.bennett"] .os-window {
+    background: linear-gradient(180deg, rgba(250, 252, 254, 0.99) 0%, rgba(239, 244, 248, 0.99) 100%);
+    border-color: rgba(129, 170, 201, 0.32);
+    border-radius: 0;
+    box-shadow: 0 24px 56px rgba(118, 140, 157, 0.14);
+}
+
+body[data-profile="n.bennett"] .os-window.is-active {
+    border-color: rgba(107, 181, 219, 0.56);
+    box-shadow:
+        0 28px 64px rgba(118, 140, 157, 0.16),
+        0 0 0 1px rgba(107, 181, 219, 0.14);
+}
+
+body[data-profile="n.bennett"] .window-header,
+body[data-profile="n.bennett"] .window-close,
+body[data-profile="n.bennett"] .window-content,
+body[data-profile="n.bennett"] .detail-pane,
+body[data-profile="n.bennett"] .doc-view,
+body[data-profile="n.bennett"] .message-copy,
+body[data-profile="n.bennett"] .app-link,
+body[data-profile="n.bennett"] .item-tag {
+    border-radius: 0;
+}
+
+body[data-profile="n.bennett"] .window-header {
+    background: linear-gradient(180deg, rgba(235, 241, 246, 0.98) 0%, rgba(225, 232, 239, 0.98) 100%);
+    color: #21323e;
+    border-bottom-color: rgba(107, 181, 219, 0.18);
+}
+
+body[data-profile="n.bennett"] .window-title::before {
+    background: rgba(107, 181, 219, 0.92);
+    box-shadow: 0 0 0 1px rgba(107, 181, 219, 0.16);
+}
+
+body[data-profile="n.bennett"] .window-close {
+    background: linear-gradient(180deg, rgba(228, 236, 242, 0.98) 0%, rgba(214, 224, 231, 0.98) 100%);
+    border-color: rgba(129, 170, 201, 0.3);
+    color: #274050;
+}
+
+body[data-profile="n.bennett"] .window-content,
+body[data-profile="n.bennett"] .detail-pane,
+body[data-profile="n.bennett"] .doc-view,
+body[data-profile="n.bennett"] .message-copy {
+    background: linear-gradient(180deg, rgba(252, 254, 255, 0.99) 0%, rgba(241, 246, 250, 0.99) 100%);
+    color: #223641;
+}
+
+body[data-profile="n.bennett"] .message-row strong,
+body[data-profile="n.bennett"] .doc-kicker,
+body[data-profile="n.bennett"] .doc-subject {
+    color: rgba(37, 74, 98, 0.74);
+}
+
+body[data-profile="o.reynolds"] .os-window {
+    background: linear-gradient(180deg, rgba(225, 218, 203, 0.98) 0%, rgba(206, 196, 178, 0.98) 100%);
+    border-color: rgba(129, 113, 84, 0.24);
+    box-shadow: 0 22px 52px rgba(99, 86, 63, 0.18);
+}
+
+body[data-profile="o.reynolds"] .window-header {
+    background: linear-gradient(180deg, rgba(188, 178, 159, 0.98) 0%, rgba(166, 154, 133, 0.98) 100%);
+    color: #443728;
+}
+
+body[data-profile="o.reynolds"] .window-title::before {
+    background: rgba(218, 185, 84, 0.92);
+    box-shadow: 0 0 14px rgba(218, 185, 84, 0.18);
+}
+
+body[data-profile="o.reynolds"] .window-content,
+body[data-profile="o.reynolds"] .detail-pane,
+body[data-profile="o.reynolds"] .doc-view,
+body[data-profile="o.reynolds"] .message-copy {
+    background: linear-gradient(180deg, rgba(239, 233, 220, 0.98) 0%, rgba(225, 216, 197, 0.98) 100%);
+    color: #45382b;
+}
+
+body[data-profile="o.reynolds"] .list-pane {
+    background: linear-gradient(180deg, #8b846c 0%, #756d58 100%);
+}
+
+body[data-profile="o.reynolds"] .item-tag {
+    color: rgba(88, 67, 24, 0.92);
+    border-color: rgba(189, 162, 84, 0.3);
+    background: rgba(239, 220, 120, 0.28);
+}
+
+body[data-profile="m.brooks"] .os-window {
+    background: linear-gradient(180deg, rgba(19, 28, 24, 0.98) 0%, rgba(13, 19, 16, 0.98) 100%);
+    border-color: rgba(129, 162, 136, 0.18);
+    box-shadow: 0 28px 64px rgba(0, 0, 0, 0.28);
+}
+
+body[data-profile="m.brooks"] .window-header {
+    background: linear-gradient(180deg, rgba(36, 52, 43, 0.98) 0%, rgba(20, 30, 25, 0.98) 100%);
+    color: #d6ddd7;
+}
+
+body[data-profile="m.brooks"] .window-title::before {
+    background: rgba(155, 176, 151, 0.92);
+    box-shadow: 0 0 14px rgba(155, 176, 151, 0.18);
+}
+
+body[data-profile="m.brooks"] .window-content,
+body[data-profile="m.brooks"] .detail-pane,
+body[data-profile="m.brooks"] .doc-view,
+body[data-profile="m.brooks"] .message-copy {
+    background: linear-gradient(180deg, rgba(29, 39, 34, 0.98) 0%, rgba(20, 28, 24, 0.98) 100%);
+    color: #d3dbd4;
+}
+
+body[data-profile="m.brooks"] .message-row strong,
+body[data-profile="m.brooks"] .doc-kicker,
+body[data-profile="m.brooks"] .doc-subject,
+body[data-profile="m.brooks"] .item-meta {
+    color: rgba(180, 192, 183, 0.66);
+}
+
+body[data-profile="m.brooks"] .list-pane {
+    background: linear-gradient(180deg, #1e2a24 0%, #15201a 100%);
+}
+
 body[data-profile="e.carter"] .os-window {
-    background: linear-gradient(180deg, rgba(8, 10, 13, 0.98) 0%, rgba(5, 7, 10, 0.98) 100%);
-    border-color: rgba(182, 64, 64, 0.2);
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.99) 0%, rgba(8, 8, 8, 0.99) 100%);
+    border-color: rgba(255, 79, 79, 0.32);
+    box-shadow: 0 34px 80px rgba(0, 0, 0, 0.56);
+    font-family: var(--font-mono);
 }
 
 body[data-profile="e.carter"] .os-window.is-active {
-    border-color: rgba(219, 96, 96, 0.42);
+    border-color: rgba(118, 255, 113, 0.48);
     box-shadow:
-        0 34px 80px rgba(0, 0, 0, 0.48),
-        0 0 0 1px rgba(219, 96, 96, 0.08);
+        0 34px 84px rgba(0, 0, 0, 0.6),
+        0 0 0 1px rgba(118, 255, 113, 0.1);
 }
 
 body[data-profile="e.carter"] .window-header {
-    background: linear-gradient(180deg, rgba(18, 22, 28, 0.96) 0%, rgba(8, 10, 13, 0.96) 100%);
+    background: linear-gradient(180deg, rgba(10, 10, 10, 0.99) 0%, rgba(0, 0, 0, 0.99) 100%);
+    border-bottom-color: rgba(118, 255, 113, 0.14);
 }
 
 body[data-profile="e.carter"] .window-title::before {
-    background: rgba(219, 96, 96, 0.92);
-    box-shadow: 0 0 14px rgba(219, 96, 96, 0.3);
+    background: rgba(255, 79, 79, 0.92);
+    box-shadow: 0 0 14px rgba(255, 79, 79, 0.3);
+}
+
+body[data-profile="e.carter"] .window-close {
+    background: linear-gradient(180deg, rgba(40, 6, 6, 0.98) 0%, rgba(16, 0, 0, 0.98) 100%);
+    border-color: rgba(255, 79, 79, 0.2);
 }
 
 body[data-profile="e.carter"] .window-content,
 body[data-profile="e.carter"] .detail-pane,
 body[data-profile="e.carter"] .doc-view,
-body[data-profile="e.carter"] .message-copy {
-    background: linear-gradient(180deg, rgba(9, 13, 18, 0.98) 0%, rgba(5, 8, 11, 0.98) 100%);
-    color: #dde6ed;
+body[data-profile="e.carter"] .message-copy,
+body[data-profile="e.carter"] .terminal-window {
+    background: linear-gradient(180deg, rgba(4, 4, 4, 0.99) 0%, rgba(0, 0, 0, 0.99) 100%);
+    color: #d7e0d8;
+    font-family: var(--font-mono);
 }
 
 body[data-profile="e.carter"] .detail-pane:not(.is-slideshow) {
-    color: #dde6ed;
+    color: #d7e0d8;
 }
 
 body[data-profile="e.carter"] .message-header {
-    border-bottom-color: rgba(255, 255, 255, 0.08);
+    border-bottom-color: rgba(118, 255, 113, 0.08);
 }
 
 body[data-profile="e.carter"] .message-row strong,
 body[data-profile="e.carter"] .doc-kicker,
 body[data-profile="e.carter"] .doc-subject {
-    color: rgba(219, 96, 96, 0.84);
+    color: rgba(118, 255, 113, 0.74);
 }
 
 body[data-profile="e.carter"] .doc-view {
-    border-color: rgba(182, 64, 64, 0.18);
-    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 79, 79, 0.18);
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.28);
 }
 
 body[data-profile="e.carter"] .doc-title {
-    border-bottom-color: rgba(219, 96, 96, 0.7);
+    border-bottom-color: rgba(255, 79, 79, 0.7);
     color: #f4f7fa;
+}
+
+body.is-regis-glitch[data-profile="e.carter"] .os-window,
+body.is-regis-glitch[data-profile="e.carter"] .window-title,
+body.is-regis-glitch[data-profile="e.carter"] .detail-pane,
+body.is-regis-glitch[data-profile="e.carter"] .terminal-output {
+    text-shadow:
+        -1px 0 rgba(255, 66, 66, 0.34),
+        1px 0 rgba(59, 232, 232, 0.3);
 }
 
 .os-window[data-app="terminal"] .window-header {
@@ -236,12 +380,40 @@ body[data-profile="e.carter"] .doc-title {
     letter-spacing: 0.3px;
 }
 
+body[data-profile="n.bennett"] .list-pane.is-strict-profile {
+    background: linear-gradient(180deg, #edf3f7 0%, #e4edf3 100%);
+    border-right-color: rgba(129, 170, 201, 0.18);
+}
+
+body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item {
+    color: #213440;
+    border-bottom-color: rgba(129, 170, 201, 0.14);
+}
+
+body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
+    background: linear-gradient(90deg, rgba(124, 186, 219, 0.16) 0%, rgba(255, 255, 255, 0.65) 100%);
+    box-shadow: inset 3px 0 0 rgba(107, 181, 219, 0.88);
+}
+
 .list-pane.is-chaotic-profile .list-item {
     position: relative;
 }
 
 .list-item.is-chaotic {
     transform: translateX(var(--item-shift, 0px)) rotate(var(--item-tilt, 0deg));
+}
+
+.list-item.is-mechanical {
+    opacity: 0;
+    transform: translateY(-3px);
+    transition:
+        opacity 0.08s steps(2, end),
+        transform 0.08s steps(2, end);
+}
+
+.list-item.is-mechanical.is-visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .list-item.is-suspect::after {

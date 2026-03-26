@@ -19,7 +19,11 @@ const DESKTOP_PROFILES = {
             id: "trash",
             label: "Corbeille"
         },
-        desktopNote: "APPELER\nLA COMPTA",
+        deskNotes: [
+            "APPELER\nLA COMPTA",
+            "OU EST PASSE\nLE BUDGET FIBRE ??",
+            "RELANCER NOAH\nPOUR LES TASSES"
+        ],
         windowOpenDelayMs: 520
     },
     "m.brooks": {
@@ -118,7 +122,9 @@ function applyDesktopProfile(userId, displayName) {
     }
 
     ensureDesktopOverlays();
-    renderDeskNote(profile.desktopNote || "");
+    renderDeskNote(profile.deskNotes || profile.desktopNote || "");
+    renderDeskIndicator(profile);
+    renderEmilyCodefield(userId === "e.carter");
     injectExclusiveModuleButton(profile);
     initializeProfileRuntime(userId);
 }
@@ -133,6 +139,26 @@ function ensureDesktopOverlays() {
         note.id = 'desk-note';
         note.hidden = true;
         windowArea.appendChild(note);
+    }
+
+    if (!document.getElementById('desk-rec-indicator')) {
+        const indicator = document.createElement('div');
+        indicator.id = 'desk-rec-indicator';
+        indicator.hidden = true;
+        indicator.innerHTML = `<span class="desk-rec-dot"></span><span class="desk-rec-text">REC</span>`;
+        windowArea.appendChild(indicator);
+    }
+
+    if (!document.getElementById('emily-codefield')) {
+        const codefield = document.createElement('div');
+        codefield.id = 'emily-codefield';
+        codefield.hidden = true;
+        codefield.setAttribute('aria-hidden', 'true');
+        codefield.innerHTML = Array.from({ length: 14 }, (_, index) => {
+            const seed = (index + 1).toString(16).padStart(2, '0').toUpperCase();
+            return `<div class="emily-code-line">0x${seed}A3FF :: 7E 01 9C D2 44 8B C1 EF / REGIS / DETERMINISTIC / TRACK ${seed}</div>`;
+        }).join('');
+        windowArea.appendChild(codefield);
     }
 
     if (!document.getElementById('regis-glitch-overlay')) {
@@ -151,8 +177,28 @@ function renderDeskNote(noteText) {
     const note = document.getElementById('desk-note');
     if (!note) return;
 
-    note.textContent = noteText || "";
-    note.hidden = !noteText;
+    const notes = Array.isArray(noteText)
+        ? noteText.filter(Boolean)
+        : (noteText ? [noteText] : []);
+
+    note.innerHTML = notes.map((content, index) => `
+        <div class="desk-note-card desk-note-card--${index + 1}">${content}</div>
+    `).join('');
+    note.hidden = notes.length === 0;
+}
+
+function renderDeskIndicator(profile) {
+    const indicator = document.getElementById('desk-rec-indicator');
+    if (!indicator) return;
+
+    indicator.hidden = !(profile.theme === 'madison');
+}
+
+function renderEmilyCodefield(isVisible) {
+    const codefield = document.getElementById('emily-codefield');
+    if (!codefield) return;
+
+    codefield.hidden = !isVisible;
 }
 
 function injectExclusiveModuleButton(profile) {
@@ -201,8 +247,8 @@ function initializeEmilyGlitch() {
             desktopRuntime.glitchPulseTimer = window.setTimeout(() => {
                 document.body.classList.remove('is-regis-glitch');
                 queueGlitch();
-            }, 130);
-        }, 3200 + Math.floor(Math.random() * 7600));
+            }, 110);
+        }, 15000 + Math.floor(Math.random() * 5000));
     };
 
     queueGlitch();
