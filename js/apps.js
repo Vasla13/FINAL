@@ -1,13 +1,88 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
-    const appButtons = document.querySelectorAll('.app-link');
-    
-    appButtons.forEach((btn) => {
-        btn.addEventListener('click', () => launchApp(btn.dataset.app));
+    const sidebar = document.getElementById('sidebar');
+    const pendingLaunches = new Set();
+    const profileConfig = window.registreDesktopProfiles?.[currentUser] || {};
+    const profileExclusiveApps = {
+        "n.bennett": {
+            id: "compliance",
+            title: "Console de Conformité Bureau",
+            width: 780,
+            height: 560,
+            minWidth: 740,
+            minHeight: 520,
+            render: renderComplianceConsole
+        },
+        "o.reynolds": {
+            id: "trash",
+            title: "Corbeille - 29/06/2032",
+            width: 860,
+            height: 560,
+            minWidth: 800,
+            minHeight: 520,
+            render: renderTrashBin
+        },
+        "m.brooks": {
+            id: "camera",
+            title: "Flux Caméra - Station 02",
+            width: 960,
+            height: 620,
+            minWidth: 900,
+            minHeight: 580,
+            render: renderCameraFeed
+        },
+        "e.carter": {
+            id: "regis-monitor",
+            title: "Moniteur R.E.G.I.S. - Processus Autonome",
+            width: 1020,
+            height: 700,
+            minWidth: 960,
+            minHeight: 640,
+            render: renderRegisMonitor
+        }
+    };
+
+    sidebar?.addEventListener('click', (event) => {
+        const button = event.target.closest('.app-link');
+        if (!button) return;
+        launchApp(button.dataset.app);
+    });
+
+    sidebar?.addEventListener('keydown', (event) => {
+        const button = event.target.closest('.app-link');
+        if (!button) return;
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            launchApp(button.dataset.app);
+        }
     });
 
     function launchApp(appId) {
-        const userData = vmData[currentUser]; 
+        if (!appId || pendingLaunches.has(appId)) return;
+
+        const existingWindow = document.getElementById(`window-${appId}`);
+        if (existingWindow) {
+            bringToFront(existingWindow);
+            return;
+        }
+
+        const delayMs = profileConfig.windowOpenDelayMs || 0;
+        if (delayMs > 0) {
+            pendingLaunches.add(appId);
+            setAppPendingState(appId, true);
+            window.setTimeout(() => {
+                pendingLaunches.delete(appId);
+                setAppPendingState(appId, false);
+                openApp(appId);
+            }, delayMs);
+            return;
+        }
+
+        openApp(appId);
+    }
+
+    function openApp(appId) {
+        const userData = vmData[currentUser];
+        const exclusiveApp = profileExclusiveApps[currentUser];
         let contentContainer;
 
         switch(appId) {
@@ -31,6 +106,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 contentContainer = createWindow('terminal', `C:\\Windows\\System32\\cmd.exe - Interface Restreinte`, 780, 540, 720, 500);
                 if(contentContainer) renderTerminal(contentContainer, userData);
                 break;
+            default:
+                if (exclusiveApp && appId === exclusiveApp.id) {
+                    contentContainer = createWindow(
+                        exclusiveApp.id,
+                        exclusiveApp.title,
+                        exclusiveApp.width,
+                        exclusiveApp.height,
+                        exclusiveApp.minWidth,
+                        exclusiveApp.minHeight
+                    );
+                    if (contentContainer) exclusiveApp.render(contentContainer, userData);
+                }
+                break;
         }
     }
 
@@ -50,8 +138,12 @@ document.addEventListener("DOMContentLoaded", () => {
         container.tabIndex = -1;
         const listPane = container.querySelector('.list-pane');
         const detailPane = container.querySelector('.detail-pane');
+        const presentation = prepareSplitViewItems(dataArray, { appId, titleKey, metaKey, isMessage });
         let slideshowController = null;
         let firstSelect = null;
+
+        listPane.classList.toggle('is-strict-profile', presentation.mode === 'strict');
+        listPane.classList.toggle('is-chaotic-profile', presentation.mode === 'chaotic');
 
         container.addEventListener('keydown', (event) => {
             if (!slideshowController) return;
@@ -65,16 +157,21 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        dataArray.forEach((item) => {
+        presentation.items.forEach((entry) => {
+            const item = entry.item;
             const div = document.createElement('div');
-            div.className = `list-item type-${item.type || 'entry'}`;
+            div.className = `list-item type-${item.type || 'entry'}${entry.extraClasses ? ` ${entry.extraClasses.join(' ')}` : ''}`;
             div.tabIndex = 0;
 
-            let displayTitle = item[titleKey];
+            Object.entries(entry.styleVars || {}).forEach(([name, value]) => {
+                div.style.setProperty(name, value);
+            });
+
+            let displayTitle = entry.displayTitle || item[titleKey];
             if (isMessage) displayTitle = `De: ${item[titleKey]}`;
 
-            const typeLabel = isMessage ? 'message' : (item.type || 'entrée');
-            const metaLabel = item[metaKey] || item.summary || '';
+            const typeLabel = entry.typeLabel || (isMessage ? 'message' : (item.type || 'entrée'));
+            const metaLabel = entry.metaLabel || item[metaKey] || item.summary || '';
 
             div.innerHTML = `
                 <div class="item-row">
@@ -236,6 +333,138 @@ document.addEventListener("DOMContentLoaded", () => {
         if (firstSelect) {
             firstSelect();
         }
+    }
+
+    function renderComplianceConsole(container) {
+        setWindowMinimumSize(container, 740, 520);
+        resizeWindow(container, 780, 560);
+        container.innerHTML = `
+            <div class="compliance-console">
+                <div class="compliance-header">
+                    <div>
+                        <div class="compliance-kicker">Audit local de bureau</div>
+                        <div class="compliance-title">NOAH BENNETT / OPEN SPACE CONTROL</div>
+                    </div>
+                    <div class="compliance-badge">Conformité partielle</div>
+                </div>
+                <div class="compliance-grid">
+                    <section class="compliance-panel">
+                        <div class="compliance-label">Température zone A</div>
+                        <div class="compliance-value">19.5°C</div>
+                        <div class="compliance-copy">Dérive tolérée : 0.3°C. Toute variation supérieure entraîne une baisse nette de productivité.</div>
+                    </section>
+                    <section class="compliance-panel">
+                        <div class="compliance-label">Statut mug personnel</div>
+                        <div class="compliance-value">Localisé</div>
+                        <div class="compliance-copy">Risque de contamination faible. Surveillance renforcée des usages collectifs recommandée.</div>
+                    </section>
+                    <section class="compliance-panel">
+                        <div class="compliance-label">Cuisine commune</div>
+                        <div class="compliance-value compliance-value--warn">Incident résiduel</div>
+                        <div class="compliance-copy">Trace olfactive persistante post micro-ondes. Action corrective : affichage d'une charte, refus passif-agressif de toute odeur marine.</div>
+                    </section>
+                    <section class="compliance-panel">
+                        <div class="compliance-label">Bruit ambiant</div>
+                        <div class="compliance-value">43 dB</div>
+                        <div class="compliance-copy">Tolérable si aucune personne ne mastique, soupire ou tape frénétiquement sur un clavier mécanique.</div>
+                    </section>
+                </div>
+                <div class="compliance-log">
+                    <div class="compliance-log-title">Infractions du jour</div>
+                    <ul>
+                        <li>01 mug inconnu laissé dans l'évier.</li>
+                        <li>02 stylos déplacés sans justification.</li>
+                        <li>01 tentative de climatisation à 22°C détectée puis corrigée.</li>
+                    </ul>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderTrashBin(container) {
+        const trashEntries = [
+            {
+                name: "draft_mail_steph_02h14.msg",
+                type: "deleted",
+                summary: "Brouillon supprimé dans la panique.",
+                content: "Objet : Réponds.\n\nSteph, si le message de rupture vient vraiment de toi, alors je veux une explication immédiate. Noah est furieux, Madison m'appelle toutes les cinq minutes et Emily ne répond plus. Je n'arrive plus à couvrir ça."
+            },
+            {
+                name: "tickets_compta_regis_real.xlsx",
+                type: "spreadsheet",
+                summary: "Budget réel non maquillé.",
+                content: "29/06/2032 - Ventilation serveurs REGIS : 18 400€\n29/06/2032 - Fibre optique non déclarée : 6 200€\n29/06/2032 - 'Maintenance station 2' : prétexte administratif."
+            },
+            {
+                name: "appel_noah_08h12.txt",
+                type: "text",
+                summary: "Transcription automatique.",
+                content: "Noah hurle qu'il est devant les grilles, que son badge ne passe plus et que la sécurité ne le laisse pas entrer. Il me demande si je savais. Je n'ai pas décroché."
+            },
+            {
+                name: "notes_panique_olivia.md",
+                type: "markdown",
+                summary: "Tentative de remise en ordre.",
+                content: "Ce n'est pas normal. Steph ne répond pas. Emily a disparu. La compta va voir les chiffres. Si REGIS a vraiment envoyé le mail, alors tout le reste est déjà dans ses logs."
+            }
+        ];
+
+        renderSplitView(container, trashEntries, 'name', 'summary', 'content');
+    }
+
+    function renderCameraFeed(container) {
+        setWindowMinimumSize(container, 900, 580);
+        resizeWindow(container, 960, 620);
+        container.innerHTML = `
+            <div class="camera-feed-window">
+                <div class="camera-feed-topbar">
+                    <span>BNI / FLUX THERMIQUE / STATION_02</span>
+                    <span>CANAL 4B</span>
+                </div>
+                <div class="camera-feed-screen">
+                    <div class="camera-room-frame">
+                        <div class="camera-room-wall camera-room-wall--left"></div>
+                        <div class="camera-room-wall camera-room-wall--right"></div>
+                        <div class="camera-room-floor"></div>
+                        <div class="camera-room-door"></div>
+                    </div>
+                    <div class="camera-heat camera-heat--one"></div>
+                    <div class="camera-heat camera-heat--two"></div>
+                    <div class="camera-static"></div>
+                    <div class="camera-scanline"></div>
+                    <div class="camera-feed-label">Aucune présence détectée.</div>
+                    <div class="camera-feed-timestamp">THERMAL FEED / ARCHIVE LOOP / 03:14:22</div>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderRegisMonitor(container) {
+        setWindowMinimumSize(container, 960, 640);
+        resizeWindow(container, 1040, 700);
+        const columns = Array.from({ length: 8 }, (_, index) => {
+            const rows = Array.from({ length: 38 }, () => `<span>${escapeHTML(generateRegisCodeLine())}</span>`).join('');
+            return `
+                <div class="regis-monitor-column" style="--rain-duration:${9 + (index * 1.2)}s; --rain-delay:${-1 * ((index % 4) * 1.4)}s;">
+                    <div class="regis-monitor-rain">${rows}${rows}</div>
+                </div>
+            `;
+        }).join('');
+
+        container.innerHTML = `
+            <div class="regis-monitor-window">
+                <div class="regis-monitor-topbar">
+                    <div>
+                        <div class="regis-monitor-kicker">IA autonome en exécution</div>
+                        <div class="regis-monitor-title">MONITEUR R.E.G.I.S.</div>
+                    </div>
+                    <div class="regis-monitor-status">STREAM NON INTERROMPABLE</div>
+                </div>
+                <div class="regis-monitor-grid">
+                    ${columns}
+                </div>
+            </div>
+        `;
     }
 
     function renderDocument(container, synthData) {
@@ -642,6 +871,129 @@ Tapez 'help' pour la liste des commandes.
         win.style.left = nextLeft + 'px';
         win.style.top = nextTop + 'px';
         bringToFront(win);
+    }
+
+    function prepareSplitViewItems(dataArray, options = {}) {
+        const appId = options.appId || '';
+        const titleKey = options.titleKey || 'name';
+        const preparedItems = dataArray.map((item) => ({
+            item,
+            displayTitle: item[titleKey],
+            typeLabel: null,
+            metaLabel: null,
+            extraClasses: [],
+            styleVars: {}
+        }));
+
+        if (appId !== 'explorer') {
+            return {
+                mode: 'default',
+                items: preparedItems
+            };
+        }
+
+        if (currentUser === 'n.bennett') {
+            preparedItems.sort((a, b) => String(a.item[titleKey] || '').localeCompare(String(b.item[titleKey] || ''), 'fr', { sensitivity: 'base' }));
+            preparedItems.forEach((entry) => entry.extraClasses.push('is-strict'));
+            return {
+                mode: 'strict',
+                items: preparedItems
+            };
+        }
+
+        if (currentUser === 'o.reynolds' || currentUser === 'm.brooks') {
+            const chaoticItems = preparedItems.map((entry) => {
+                const hash = getDeterministicHash(`${currentUser}:${entry.item[titleKey]}`);
+                const displayTitle = currentUser === 'o.reynolds'
+                    ? formatOliviaExplorerTitle(entry.item[titleKey], hash)
+                    : formatMadisonExplorerTitle(entry.item[titleKey], hash);
+
+                const extraClasses = ['is-chaotic'];
+                if (hash % 3 === 0) extraClasses.push('is-suspect');
+
+                return {
+                    ...entry,
+                    displayTitle,
+                    typeLabel: hash % 4 === 0 && !['corrupt', 'deleted'].includes(entry.item.type) ? 'fichier?' : null,
+                    extraClasses,
+                    sortWeight: hash,
+                    styleVars: {
+                        '--item-tilt': `${((hash % 5) - 2) * 0.35}deg`,
+                        '--item-shift': `${(hash % 7) - 3}px`
+                    }
+                };
+            });
+
+            chaoticItems.sort((a, b) => {
+                if (a.sortWeight === b.sortWeight) {
+                    return String(a.item[titleKey] || '').localeCompare(String(b.item[titleKey] || ''), 'fr', { sensitivity: 'base' });
+                }
+                return a.sortWeight - b.sortWeight;
+            });
+
+            return {
+                mode: 'chaotic',
+                items: chaoticItems
+            };
+        }
+
+        return {
+            mode: 'default',
+            items: preparedItems
+        };
+    }
+
+    function formatOliviaExplorerTitle(title, hash) {
+        let output = String(title || '');
+        if (hash % 2 === 0) output = output.replace(/ /g, '_');
+        if (hash % 3 === 0) output = output.replace(/\.(?=[^.]+$)/, '_rev2.');
+        if (hash % 5 === 0) output = `copie_${output}`;
+        return output;
+    }
+
+    function formatMadisonExplorerTitle(title, hash) {
+        let output = String(title || '');
+        if (hash % 2 === 0) output = output.replace(/_/g, ' ');
+        if (hash % 3 === 0) output = output.replace(/\.(?=[^.]+$)/, '?.');
+        if (hash % 5 === 0) output = `${output} (obs)`;
+        if (hash % 7 === 0) {
+            output = output.split('').map((char, index) => {
+                if (!/[a-z]/i.test(char)) return char;
+                return index % 2 === 0 ? char.toLowerCase() : char.toUpperCase();
+            }).join('');
+        }
+        return output;
+    }
+
+    function getDeterministicHash(value) {
+        let hash = 0;
+        const input = String(value || '');
+        for (let index = 0; index < input.length; index++) {
+            hash = ((hash << 5) - hash) + input.charCodeAt(index);
+            hash |= 0;
+        }
+        return Math.abs(hash);
+    }
+
+    function generateRegisCodeLine() {
+        const prefixes = ['regis', 'archive', 'future', 'citywide', 'override', 'predictive', 'intake', 'scan'];
+        const operators = ['=', '=>', '::', '!=', '&&', '||'];
+        const suffixes = [
+            'bniconnect.profile',
+            'human_override_disabled',
+            'candidate.integration',
+            'redundant_data',
+            'trajectory_lock',
+            'behavioral_seed',
+            'authority_matrix'
+        ];
+
+        const left = prefixes[Math.floor(Math.random() * prefixes.length)];
+        const right = suffixes[Math.floor(Math.random() * suffixes.length)];
+        const operator = operators[Math.floor(Math.random() * operators.length)];
+        const scalar = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+
+        return `${left}.${scalar} ${operator} ${right}`;
     }
 
     function escapeHTML(value) {

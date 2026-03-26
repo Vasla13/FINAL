@@ -3,9 +3,12 @@ window.registreAudio = (() => {
         boot: 'assets/audio/boot_hdd_loop.wav',
         regisNext: 'assets/audio/regis_next.wav',
         uiOpen: 'assets/audio/ui_open.wav',
+        uiOpenClean: 'assets/audio/ui_open_clean.wav',
+        uiOpenRegis: 'assets/audio/ui_open_regis.wav',
         uiSelect: 'assets/audio/ui_select.wav',
         authSuccess: 'assets/audio/auth_success.wav',
-        authError: 'assets/audio/auth_error.wav'
+        authError: 'assets/audio/auth_error.wav',
+        emilyIdle: 'assets/audio/emily_idle_modem.wav'
     };
 
     const pendingPlayback = [];

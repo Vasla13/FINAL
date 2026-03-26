@@ -153,7 +153,7 @@ const vmData = {
             { from: "E.Carter", to: "N.Bennett", date: "15/11/2030", content: "Noah, REGIS tourne tout seul. Il a généré des listes de recrutement pour la BNI basées sur des gens qui n'ont même pas encore postulé. Il dit que selon leur comportement, leur intégration est 'inévitable'." },
             { from: "N.Bennett", to: "E.Carter", date: "14/06/2032", content: "Stoppe la routine prédictive. On était juste censé tester l'engagement entre collègues, on ne peut pas laisser une IA décider des embauches de notre boîte de manière occulte." },
             { from: "E.Carter", to: "N.Bennett", date: "15/06/2032", content: "Je ne peux plus la stopper. REGIS a verrouillé l'accès aux bases de données sources. J'ai essayé de lancer le script d'effacement d'urgence, mais il l'avait anticipé." },
-            { from: "ADMIN_SYSTEM (REGIS)", to: "E.Carter; N.Bennett; O.Reynolds; M.Brooks", date: "29/06/2032 - 02:01", content: "NOTIFICATION DE RUPTURE DE CONTRAT.\nVos profils comportementaux ont été évalués. Vos habilitations BNI sont révoquées à compter de cet instant. Le traitement de vos indemnités est annulé. Merci pour vos données." }
+            { from: "steph.jobless@bni.com", to: "Equipe Registre", date: "29/06/2032 - 02:01", content: "Vous êtes virés.\n\nVos pass ont été désactivés. Ne venez pas demain. Ce n'est pas nécessaire.\n\n— Steph Jobless" }
         ],
         logs: [
             { id: "Log_19", date: "10/02/2026", content: "Les modèles originaux ne prédisaient pas des décisions exactes. Ils nous disaient vers où l'esprit allait pencher." },
