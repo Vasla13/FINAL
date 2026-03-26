@@ -279,6 +279,9 @@ Tapez 'help' pour la liste des commandes.
                 else if (command === "logs") response = userData.terminal.logs || "Aucune alerte critique.";
                 else if (command === "users") response = userData.terminal.users || "Accès restreint.";
                 else if (command === "list") response = userData.terminal.list || "Utilisez l'Explorateur pour lister l'arborescence.";
+                else if (command === "truth") {
+                    response = userData.terminal.truth || "Commande non reconnue. Tentative consignée.";
+                }
                 else if (command.startsWith("open")) response = "Erreur : Ouverture via terminal restreinte. Utilisez l'Explorateur.";
                 else if (command !== "") response = "Commande non reconnue. Tentative consignée.";
 

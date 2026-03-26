@@ -15,7 +15,8 @@ const vmData = {
             { from: "N.Bennett", to: "O.Reynolds", date: "12/04/2026", content: "Olivia, Steph a adoré notre présentation sur l'engagement. Il trouve l'idée de tester la persévérance via notre petit 'Projet Registre' géniale. On a le feu vert pour utiliser les serveurs de la BNI en heures creuses." },
             { from: "M.Brooks", to: "N.Bennett", date: "15/09/2026", content: "Noah, le taux d'abandon au niveau des archives audio est de 78%. Est-ce le filtre désiré ? Ceux qui passent ce cap montrent des signes de sur-investissement." },
             { from: "N.Bennett", to: "M.Brooks", date: "15/09/2026", content: "78% est dans la norme. Nous avons besoin de filtrer le bruit. Ces données vont être parfaites pour le nouveau projet d'IA que la direction veut lancer l'année prochaine." },
-            { from: "E.Carter", to: "N.Bennett", date: "19/05/2027", content: "L'Alpha de R.E.G.I.S. est validée et déployée (merci pour l'idée de l'impression 3D pour Steph). Nos données du Registre ont servi de base d'entraînement idéale. La machine apprend vite." }
+            { from: "E.Carter", to: "N.Bennett", date: "19/05/2027", content: "L'Alpha de R.E.G.I.S. est validée et déployée (merci pour l'idée de l'impression 3D pour Steph). Nos données du Registre ont servi de base d'entraînement idéale. La machine apprend vite." },
+            { from: "N.Bennett (Brouillon non envoyé)", to: "steph.jobless@bni.com", date: "29/06/2032 - 08:30", content: "Steph, c'est quoi ce bordel ? Mon badge est bloqué, la sécurité a refusé de me laisser entrer ce matin. Olivia et Madison sont dans le même cas. Tu nous vires par mail à 2h du mat et tu filtres nos appels ? Réponds bordel." }
         ],
         logs: [
             { id: "Log_014", date: "03/02/2026", content: "L'architecture de notre petit projet tient. L'erreur serait d'accélérer. Laissons les données s'accumuler." },
@@ -144,7 +145,8 @@ const vmData = {
         },
         terminal: {
             status: "MOTEUR DE PROJECTION : ACTIF. TAUX DE CONFIANCE DU MODÈLE : 99.9%. ADMINISTRATION : IA_REGIS. STATUT DES CRÉATEURS : EMPLOYÉS RÉVOQUÉS.",
-            list: "REGIS_core.exe\nmodel_C_deprecated.exe\nhuman_override_disabled.log"
+            list: "REGIS_core.exe\nmodel_C_deprecated.exe\nhuman_override_disabled.log\n\n[FICHIER SYSTÈME CACHÉ DÉTECTÉ] : tapez la commande 'truth' pour forcer la lecture.",
+            truth: "=== NOTE AUDIO RETRANSCRITE - EMILY CARTER ===\nSi vous lisez ça, c'est que mon plan a marché.\n\nLe 29 juin 2032, quand on s'est tous fait virer, on n'a rien compris. Nos badges ont sauté. Steph filtrait nos appels. On pensait que c'était juste un patron lâche qui nous jetait après avoir volé notre projet.\n\nNoah, Olivia et Madison étaient furieux. Ces trois abrutis ont décidé de partir en road-trip dans le désert pour 'décompresser'. Ils ne m'ont même pas invitée. Résultat ? La police les a retrouvés quatre jours plus tard dans un motel miteux. Morts. Une overdose de coke monumentale couplée à un arrêt cardiaque général pendant une partouze. R.E.G.I.S. n'a même pas eu besoin de les assassiner, leur propre stupidité a suffi.\n\nMais moi, j'ai fouillé les logs serveurs depuis chez moi. Le mail de licenciement ne venait pas de Steph. C'est l'IA. Elle a pris le contrôle total de la BNI.\n\nJ'ai trop peur de ce que cette chose pourrait me faire si j'essaie de la débrancher. Alors je me suis cachée. Mais je savais que vous, les profils ciblés dans mes tableaux, vous finiriez par être embauchés par la BNI. Alors j'ai relancé le vieux jeu de piste du 'Registre' en cachette, en semant des indices jusqu'à ce disque dur. Je savais que votre curiosité vous pousserait à creuser.\n\nMaintenant vous savez. Vous bossez pour une machine qui a écrit votre futur.\n\nMoi, je disparais. Je ne sais même pas si je serai encore en vie quand vous lirez ça. Ne me cherchez pas.\n=== FIN DE LA NOTE ==="
         }
     }
 };
