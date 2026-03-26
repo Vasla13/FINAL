@@ -59,6 +59,10 @@ function createWindow(appId, title, width = 600, height = 400) {
     area.appendChild(win);
     bringToFront(win);
     setAppButtonState(appId, true);
+    window.registreAudio?.play('uiOpen', {
+        volume: 0.18,
+        playbackRate: 0.92 + (Math.random() * 0.14)
+    });
 
     win.querySelector('.window-close').addEventListener('click', (event) => {
         event.stopPropagation();
@@ -141,6 +145,10 @@ function makeDraggable(win) {
 function closeWindow(win) {
     const appId = win.dataset.app;
     const wasActive = win.classList.contains('is-active');
+    window.registreAudio?.play('uiSelect', {
+        volume: 0.12,
+        playbackRate: 0.82
+    });
     win.remove();
     setAppButtonState(appId, false);
 

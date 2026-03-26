@@ -46,6 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const listPane = container.querySelector('.list-pane');
         const detailPane = container.querySelector('.detail-pane');
         let slideshowController = null;
+        let firstSelect = null;
 
         container.addEventListener('keydown', (event) => {
             if (!slideshowController) return;
@@ -78,14 +79,40 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="item-meta">${escapeHTML(metaLabel)}</div>
             `;
 
-            const selectItem = () => {
+            const selectItem = (playSound = true) => {
                 listPane.querySelectorAll('.list-item').forEach(el => el.classList.remove('active'));
                 div.classList.add('active');
                 detailPane.scrollTop = 0;
+
+                if (playSound) {
+                    window.registreAudio?.play('uiSelect', {
+                        volume: 0.08,
+                        playbackRate: 0.96 + (Math.random() * 0.08)
+                    });
+                }
                 
                 if (item.type === "slideshow") {
                     expandWindowForSlideshow(container);
                     let currentSlide = 0;
+
+                    const moveSlide = (direction) => {
+                        if (direction === 'next') {
+                            currentSlide = (currentSlide < item.slides.length - 1) ? currentSlide + 1 : 0;
+                            window.registreAudio?.play('regisNext', {
+                                volume: 0.4,
+                                playbackRate: 0.96 + (Math.random() * 0.05)
+                            });
+                        } else {
+                            currentSlide = (currentSlide > 0) ? currentSlide - 1 : item.slides.length - 1;
+                            window.registreAudio?.play('uiSelect', {
+                                volume: 0.12,
+                                playbackRate: 0.8
+                            });
+                        }
+
+                        renderSlide();
+                        container.focus();
+                    };
 
                     const renderSlide = () => {
                         const slide = item.slides[currentSlide];
@@ -137,28 +164,18 @@ document.addEventListener("DOMContentLoaded", () => {
                         `;
 
                         detailPane.querySelector('[data-regis-nav="prev"]').addEventListener('click', () => {
-                            currentSlide = (currentSlide > 0) ? currentSlide - 1 : item.slides.length - 1;
-                            renderSlide();
-                            container.focus();
+                            moveSlide('prev');
                         });
 
                         detailPane.querySelector('[data-regis-nav="next"]').addEventListener('click', () => {
-                            currentSlide = (currentSlide < item.slides.length - 1) ? currentSlide + 1 : 0;
-                            renderSlide();
-                            container.focus();
+                            moveSlide('next');
                         });
                     };
 
                     detailPane.classList.add('is-slideshow');
                     slideshowController = {
-                        prev: () => {
-                            currentSlide = (currentSlide > 0) ? currentSlide - 1 : item.slides.length - 1;
-                            renderSlide();
-                        },
-                        next: () => {
-                            currentSlide = (currentSlide < item.slides.length - 1) ? currentSlide + 1 : 0;
-                            renderSlide();
-                        }
+                        prev: () => moveSlide('prev'),
+                        next: () => moveSlide('next')
                     };
 
                     renderSlide();
@@ -193,20 +210,26 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             };
 
-            div.addEventListener('click', selectItem);
+            div.addEventListener('click', () => selectItem(true));
             div.addEventListener('keydown', (event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
-                    selectItem();
+                    selectItem(true);
                 }
             });
 
             listPane.appendChild(div);
+
+            if (!firstSelect) {
+                firstSelect = () => {
+                    selectItem(false);
+                    div.focus();
+                };
+            }
         });
 
-        const firstItem = listPane.querySelector('.list-item');
-        if (firstItem) {
-            firstItem.click();
+        if (firstSelect) {
+            firstSelect();
         }
     }
 

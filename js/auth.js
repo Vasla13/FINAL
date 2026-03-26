@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
     const errorMessage = document.getElementById('errorMessage');
+    let bootAudio = null;
 
     const bootSequence = [
         "BIOS Revision 4.02 - BNI Core System",
@@ -24,6 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
             setTimeout(typeBootLines, Math.random() * 200 + 100); 
         } else {
             setTimeout(() => {
+                if (window.registreAudio) {
+                    window.registreAudio.stop(bootAudio, 700);
+                }
                 bootScreen.style.opacity = '0';
                 setTimeout(() => {
                     bootScreen.style.display = 'none';
@@ -35,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
     
     // Si pas encore connecté, lancer le boot
     if (!sessionStorage.getItem('registre_active_user')) {
+        bootAudio = window.registreAudio?.play('boot', { loop: true, volume: 0.22 });
         typeBootLines();
     } else {
         bootScreen.style.display = 'none';
@@ -55,10 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (authorizedUsers[rawInput]) {
             sessionStorage.setItem('registre_active_user', authorizedUsers[rawInput]);
             sessionStorage.setItem('registre_display_name', usernameInput.value.trim());
+            window.registreAudio?.play('authSuccess', { volume: 0.34 });
             errorMessage.style.color = "#27ae60";
             errorMessage.textContent = "Habilitation confirmée. Chargement du profil...";
             setTimeout(() => { window.location.href = "desktop.html"; }, 1200);
         } else {
+            window.registreAudio?.play('authError', { volume: 0.26 });
             errorMessage.style.color = "var(--error-color)";
             errorMessage.textContent = "Erreur : Identifiant inconnu ou profil archivé.";
             usernameInput.value = "";
