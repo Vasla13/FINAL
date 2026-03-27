@@ -66,26 +66,26 @@ document.addEventListener("DOMContentLoaded", () => {
     ];
     const syncCalibrationHits = 3;
     const popupAds = [
-        { title: "Gagnez une Declasse Tornado !", copy: "Cliquez pour recevoir une voiture presque gratuite. Presque.", badge: "Sponsorisé" },
-        { title: "Rencontrez des célibataires à Vinewood !", copy: "Des profils 100% authentiques, sauf les trente-sept premiers.", badge: "Lifeinvader" },
-        { title: "Achetez du eCola !", copy: "Le goût de la performance liquide et du sucre contractuel.", badge: "eCola" },
-        { title: "Maze Bank Premium+", copy: "Transformez votre découvert en opportunité de croissance.", badge: "Finance" },
-        { title: "Bleeter Verified Pack", copy: "Achetez votre crédibilité sociale avant votre pause déjeuner.", badge: "Social" },
-        { title: "TacoBomb Franchise", copy: "Devenez votre propre patron. Odeur incluse.", badge: "Opportunité" },
-        { title: "Foreclosure Jackpot", copy: "Une villa saisi, six voisins armés, zéro acompte.", badge: "Immobilier" },
-        { title: "Redwood Focus Week", copy: "Une cigarette gratuite pour chaque burnout non déclaré.", badge: "Promo" },
-        { title: "San Andreas Success Summit", copy: "Neuf speakers. Aucun contenu. Buffet hors de prix.", badge: "Business" },
-        { title: "Benny's Deluxe Upgrade", copy: "Votre caisse mérite mieux que votre salaire.", badge: "Auto" },
-        { title: "Vinewood Vision Coaching", copy: "Réinventez votre carrière en quinze slides et deux mensonges.", badge: "Coaching" },
-        { title: "Cluckin' Bell Rewards", copy: "Un bucket offert pour chaque mot de passe compromis.", badge: "Food" },
-        { title: "Shark Property Alerts", copy: "Recevez 42 notifications par heure sur des lofts hors budget.", badge: "Alertes" },
-        { title: "Lucky Plucker Coupons", copy: "Votre digestion mérite une loterie.", badge: "Coupons" },
-        { title: "Los Santos Dating CRM", copy: "Automatisez vos relations humaines comme un vrai cadre.", badge: "BETA" }
+        { network: "Bravado Media", title: "Gagnez une Bravado Banshee !", copy: "Cliquez pour repartir avec un coupé rouge payé par un sponsor douteux.", badge: "Auto", image: "assets/hack_ads/banshee.webp", imageMode: "cover" },
+        { network: "Nightlife LS", title: "Rencontres rapides à Vinewood", copy: "Profils certifiés, filtres douteux et décisions regrettables incluses.", badge: "Nightlife", image: "assets/hack_ads/vanilla-unicorn.webp", imageMode: "cover" },
+        { network: "eCola Network", title: "Achetez du eCola !", copy: "Le goût de la performance liquide et du sucre contractuel.", badge: "eCola", image: "assets/hack_ads/ecola.webp", imageMode: "contain" },
+        { network: "Maze Bank Ads", title: "Maze Bank Premium+", copy: "Transformez votre découvert en opportunité de croissance.", badge: "Finance", image: "assets/hack_ads/maze-bank.webp", imageMode: "contain" },
+        { network: "Lifeinvader Media", title: "Lifeinvader Boost Pack", copy: "Achetez votre crédibilité sociale avant votre pause déjeuner.", badge: "Social", image: "assets/hack_ads/lifeinvader.jpg", imageMode: "cover" },
+        { network: "Sprunk Street", title: "Sprunk Max Energy", copy: "Restez éveillé, tremblant et parfaitement monétisable.", badge: "Sprunk", image: "assets/hack_ads/sprunk.webp", imageMode: "contain" },
+        { network: "Up-n-Atom TV", title: "Combo atomique minute", copy: "Burgers rétro, digestion risquée et drive-thru toujours trop long.", badge: "Fast Food", image: "assets/hack_ads/up-n-atom.webp", imageMode: "cover" },
+        { network: "Burger Shot TV", title: "Burger Shot Mega Deal", copy: "Un menu, trois sauces, zéro idée de la provenance.", badge: "Promo", image: "assets/hack_ads/burger-shot.webp", imageMode: "contain" },
+        { network: "Cluckin Bell Live", title: "Cluckin' Bell Rewards", copy: "Le poulet industriel que votre rythme cardiaque mérite.", badge: "Food", image: "assets/hack_ads/cluckin-bell.webp", imageMode: "contain" },
+        { network: "Pisswasser Sports", title: "Pisswasser Fan Pack", copy: "Hydratation de stade, mousse suspecte et patriotisme liquide.", badge: "Beer", image: "assets/hack_ads/pisswasser.webp", imageMode: "contain" },
+        { network: "Bean Machine Radio", title: "Bean Machine Night Fuel", copy: "Trois cafés, aucune pause et une productivité socialement inquiétante.", badge: "Cafe", image: "assets/hack_ads/bean-machine.webp", imageMode: "cover" },
+        { network: "Property Wire", title: "Shark Property Alerts", copy: "Recevez 42 notifications par heure sur des lofts hors budget.", badge: "Alertes", image: "assets/hack_ads/maze-bank.webp", imageMode: "contain" },
+        { network: "Vision Channel", title: "Vinewood Vision Coaching", copy: "Réinventez votre carrière en quinze slides et deux mensonges.", badge: "Coaching", image: "assets/hack_ads/lifeinvader.jpg", imageMode: "cover" },
+        { network: "Club Strawberry", title: "Sortie VIP Strawberry", copy: "Une soirée, trois néons, aucun remboursement.", badge: "Club", image: "assets/hack_ads/vanilla-unicorn.webp", imageMode: "cover" },
+        { network: "Bravado Media", title: "Banshee Weekend Drop", copy: "Passez de piéton stressé à pilote irresponsable en un clic.", badge: "Sponsorisé", image: "assets/hack_ads/banshee.webp", imageMode: "cover" }
     ];
     const popupLayout = [
-        [0.02, 0.08], [0.24, 0.05], [0.47, 0.07], [0.71, 0.09], [0.82, 0.2],
-        [0.08, 0.3], [0.31, 0.26], [0.56, 0.31], [0.76, 0.4], [0.13, 0.54],
-        [0.37, 0.5], [0.61, 0.56], [0.05, 0.72], [0.43, 0.71], [0.74, 0.7]
+        [0.02, 0.04], [0.22, 0.02], [0.43, 0.03], [0.64, 0.02], [0.82, 0.05],
+        [0.05, 0.31], [0.26, 0.27], [0.47, 0.29], [0.68, 0.28], [0.83, 0.34],
+        [0.02, 0.62], [0.24, 0.6], [0.46, 0.63], [0.68, 0.61], [0.82, 0.64]
     ];
 
     const playKeySound = () => {
@@ -455,10 +455,15 @@ document.addEventListener("DOMContentLoaded", () => {
                 popup.style.zIndex = String(10 + index);
                 popup.innerHTML = `
                     <div class="malware-popup-header">
-                        <span>Lifeinvader Media Partner</span>
+                        <span>${ad.network || 'Lifeinvader Media Partner'}</span>
                         <button type="button" class="malware-popup-close" aria-label="Fermer">X</button>
                     </div>
                     <div class="malware-popup-body">
+                        ${ad.image ? `
+                            <div class="malware-popup-media malware-popup-media--${ad.imageMode || 'cover'}">
+                                <img src="${ad.image}" alt="" loading="eager" decoding="async">
+                            </div>
+                        ` : ''}
                         <div class="malware-popup-title">${ad.title}</div>
                         <div class="malware-popup-copy">${ad.copy}</div>
                         <div class="malware-popup-badge">${ad.badge}</div>
