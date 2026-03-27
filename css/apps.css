@@ -272,6 +272,38 @@ body[data-profile="o.reynolds"] .item-tag {
     background: rgba(239, 220, 120, 0.28);
 }
 
+body[data-profile="o.reynolds"] .terminal-window {
+    background:
+        radial-gradient(circle at top right, rgba(189, 162, 84, 0.08), transparent 24%),
+        linear-gradient(180deg, rgba(235, 228, 214, 0.99) 0%, rgba(219, 209, 189, 0.99) 100%);
+    color: #3f3328;
+}
+
+body[data-profile="o.reynolds"] .terminal-chrome {
+    color: #7fb2dd;
+}
+
+body[data-profile="o.reynolds"] .terminal-output {
+    border-color: rgba(129, 113, 84, 0.18);
+    background: rgba(255, 248, 236, 0.72);
+    color: #4b3b2d;
+    text-shadow: none;
+}
+
+body[data-profile="o.reynolds"] .terminal-line--command,
+body[data-profile="o.reynolds"] .terminal-prompt {
+    color: #c2893a;
+}
+
+body[data-profile="o.reynolds"] .terminal-input-line {
+    border-color: rgba(129, 113, 84, 0.18);
+    background: rgba(255, 247, 233, 0.62);
+}
+
+body[data-profile="o.reynolds"] .terminal-input {
+    color: #4b3b2d;
+}
+
 body[data-profile="m.brooks"] .os-window {
     background: linear-gradient(180deg, rgba(19, 28, 24, 0.98) 0%, rgba(13, 19, 16, 0.98) 100%);
     border-color: rgba(129, 162, 136, 0.18);
@@ -391,8 +423,8 @@ body[data-profile="n.bennett"] .os-window[data-app="terminal"] .window-header {
 
 body[data-profile="o.reynolds"] .os-window[data-app="terminal"] .window-header {
     background: linear-gradient(180deg, rgba(188, 178, 159, 0.99) 0%, rgba(166, 154, 133, 0.99) 100%);
-    color: #443728;
-    border-bottom-color: rgba(129, 113, 84, 0.18);
+    color: #3f3123;
+    border-bottom-color: rgba(129, 113, 84, 0.24);
 }
 
 .os-window[data-app="terminal"] .window-content {

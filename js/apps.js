@@ -443,18 +443,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 type: "spreadsheet",
                 summary: "Budget réel non maquillé.",
                 content: "29/06/2032 - Ventilation serveurs REGIS : 18 400€\n29/06/2032 - Fibre optique non déclarée : 6 200€\n29/06/2032 - 'Maintenance station 2' : prétexte administratif."
-            },
-            {
-                name: "appel_noah_08h12.txt",
-                type: "text",
-                summary: "Transcription automatique.",
-                content: "Noah hurle qu'il est devant les grilles, que son badge ne passe plus et que la sécurité ne le laisse pas entrer. Il me demande si je savais. Je n'ai pas décroché."
-            },
-            {
-                name: "notes_panique_olivia.md",
-                type: "markdown",
-                summary: "Tentative de remise en ordre.",
-                content: "Ce n'est pas normal. Steph ne répond pas. Emily a disparu. La compta va voir les chiffres. Si REGIS a vraiment envoyé le mail, alors tout le reste est déjà dans ses logs."
             }
         ];
 

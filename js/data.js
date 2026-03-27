@@ -10,7 +10,7 @@ const vmData = {
             { name: "Recette_Cafe_V60.txt", type: "text", summary: "Note personnelle.", content: "Ratio parfait : 15g de café pour 250ml d'eau.\nTempérature : 92°C.\nPré-infusion : 30 secondes.\n\nNote : Dire à Olivia d'arrêter d'acheter le café en capsule pour l'open space, c'est une insulte au concept même de productivité." },
             { name: "Charte_Proprete_OpenSpace_v4.pdf", type: "document", summary: "Document jamais validé par les RH.", content: "Rappel des règles de vie (Suite à l'incident du micro-ondes) :\n1. Le poisson est strictement interdit dans l'espace cuisine.\n2. Vos tasses doivent être lavées le soir même. L'évier n'est pas une zone de stockage.\n3. La température de la climatisation est fixée à 19.5°C. Toute modification non autorisée nuit à la productivité globale de cette équipe.\nMerci de faire preuve d'un minimum de professionnalisme." },
             { name: "Schema_Parcours_Progression.drawio", type: "corrupt", summary: "Fichier illisible.", content: "Erreur de rendu graphique. 7 nœuds corrompus." },
-            { name: "temp_dispersion_archives.log", type: "log", summary: "Export généré automatiquement.", content: "[14:02] Export fragment 8B... OK.\n[14:03] Sauvegarde serveur relais Ouest... OK.\n[NOTE SYSTÈME] Dernière modification par IA_REGIS : 29 Juin 2032. Archive scellée." },
+            { name: "temp_dispersion_archives.log", type: "log", summary: "Export généré automatiquement.", content: "[14:02] Export fragment 8B... OK.\n[14:03] Sauvegarde serveur relais Ouest... OK.\n[NOTE SYSTÈME] Dernière synchronisation : 29 Juin 2032. Archive scellée." },
             { name: "~WRL382.tmp", type: "deleted", summary: "Secteur endommagé.", content: "Lecture impossible : Secteur endommagé." }
         ],
         messages: [
@@ -36,7 +36,7 @@ const vmData = {
         },
         terminal: {
             status: "INTÉGRITÉ STRUCTURELLE : 94%. ANOMALIES ACTIVES : 112. SYSTÈME HORS LIGNE DEPUIS : 29/06/2032.",
-            logs: "[Alerte] Révocation d'accès employé détectée (Origine: Moteur REGIS - 29/06/2032)."
+            logs: "[Alerte] Révocation d'accès employé détectée (Origine: Inconnu - 29/06/2032)."
         }
     },
 
@@ -47,7 +47,7 @@ const vmData = {
             { name: "Couverture_Admin_2026.pdf", type: "document", summary: "Justification légale des locaux de test.", content: "Le maintien des baux pour les Stations 1 à 6 se fera via la holding de la BNI. Les factures d'électricité doivent simuler une activité de stockage d'archives mortes. Aucune présence humaine régulière ne doit être détectée, hormis les passages d'entretien." },
             { name: "Inventaire_Station_4.csv", type: "spreadsheet", summary: "Liste de matériel banal.", content: "Armoire métallique x4\nServeur local BNI (désactivé) x1\nChaises pliantes x2\nCapteur infrarouge (dissimulé) x3" },
             { name: "Budget_Serveurs_REGIS.xlsx", type: "spreadsheet", summary: "Allocation de ressources.", content: "Allocation d'espace de calcul validée par la direction pour l'Alpha d'Emily (2027). \n[Mise à jour 2031] : Le moteur autonome 'REGIS' consomme actuellement 84% de l'architecture serveur allouée à notre département. Il va falloir justifier ça." },
-            { name: "Idees_Cadeau_Depart_RH.txt", type: "text", summary: "Brouillon non professionnel.", content: "Pour le pot de départ de Sarah (RH) :\n- Carte cadeau ? (Trop impersonnel)\n- Bouteille de vin ? (Classique)\n- Un bon de sortie pour fuir la BNI ? (Ne pas écrire ça sur la carte officielle).\n\nRappel : Relancer Noah pour qu'il donne ses 5 balles pour la cagnotte." },
+            { name: "Idees_Cadeau_Kevin_IT.txt", type: "text", summary: "Brouillon non professionnel.", content: "Pour le cadeau de fin de stage de Kevin (IT) :\n- Un vrai badge admin ? (Absolument non)\n- Un mug 'J'ai redémarré le serveur et tout le monde a applaudi' ? (Honnête)\n- Un manuel 'Pourquoi 1234 n'est pas un mot de passe' ? (Très personnel)\n- Une multiprise ? (Il arriverait quand même à la faire fumer)\n\nNote : Ne surtout pas lui laisser toucher au Wi-Fi invité pendant le pot, par mesure de sécurité collective." },
             { name: "Plaintes_Voisinage_Station2.txt", type: "text", summary: "Logistique de couverture.", content: "APPEL DU PROPRIÉTAIRE (Mardi 14h) :\nLe voisin du dessous se plaint d'entendre des bourdonnements continus et de voir de la lumière bleue sous la porte à 3h du matin.\nNote pour moi-même : Rappeler à Emily qu'elle ne doit pas laisser les serveurs de test en mode 'ventilation maximale' quand elle quitte nos fausses stations. J'ai dû prétexter qu'on stockait des frigos industriels défectueux." },
             { name: "Achats_Materiels_Q3.xlsx", type: "corrupt", summary: "Partiellement corrompu.", content: "Lignes corrompues... [LISIBLE] : Micro-caméra thermique x12 - 4500$ | Câblage indétectable - 800$" },
             { name: "deleted_record_09.dat", type: "deleted", summary: "Secteur endommagé.", content: "Lecture impossible : Secteur endommagé." }
@@ -65,7 +65,7 @@ const vmData = {
             { id: "Log_18", date: "02/10/2027", content: "Je passe plus de temps à justifier l'achat de multiprises et de post-it auprès de la compta qu'à faire mon vrai métier. Si je vois encore une note de frais de Noah pour des 'stylos d'architecture pointe fine', je le mute dans les sous-sols." },
             { id: "Log_27", date: "05/04/2028", content: "Si je dois encore justifier l'achat de 400 mètres de fibre optique indétectable à la compta en le faisant passer pour des 'fournitures de bureau et agrafeuses', je démissionne. Steph a intérêt à me donner une prime à la fin de l'année." },
             { id: "Log_12", date: "28/02/2029", content: "Une façade efficace ne ment pas complètement. Elle sélectionne ce qu'elle montre. Le public pense que nous cherchons des fantômes dans les murs. C'est inoffensif et ça nous donne d'excellentes datas." },
-            { id: "Log_34", date: "19/04/2032", content: "Emily perd le contrôle. REGIS a modifié de lui-même nos mots de passe d'accès locaux. La machine ferme les portes derrière nous." }
+            { id: "Log_34", date: "19/04/2032", content: "Emily perd le contrôle. Les mots de passe d'accès locaux ont été modifiés sans validation humaine. Quelque chose ferme les portes derrière nous." }
         ],
         synthesis: {
             title: "SYNTHESE_FACADE_MAINTENANCE.pdf",
@@ -111,8 +111,8 @@ const vmData = {
             content: "Notre petit projet est devenu un miroir sans tain cognitif. Les anomalies que nous avons dispersées n'ont aucune valeur intrinsèque, elles servent de réactifs chimiques.\n\nQue révèle un individu qui consacre trois ans de sa vie à tracer des corrélations invisibles ? Il révèle une capacité de traitement de l'information lacunaire, une résistance exceptionnelle à la frustration, et une propension à se soumettre à une structure d'autorité silencieuse.\n\nC'est à partir de la phase 3 que le changement s'opère. Les sujets cherchent l'Architecte. En cartographiant le mystère, ils cartographient leur propre profil psychologique avec une précision que même nos tests RH standards ne pourraient atteindre. Ils deviennent de parfaites recrues potentielles."
         },
         terminal: {
-            status: "SUJETS SOUS SURVEILLANCE ACTIVE : 47. ACQUISITION DE COMPORTEMENT : REGIS_OVERRIDE.",
-            users: "Accès RH restreint. Autorisation IA_REGIS requise."
+            status: "SUJETS SOUS SURVEILLANCE ACTIVE : 47. ACQUISITION DE COMPORTEMENT : CANAL INTERNE PRIORITAIRE.",
+            users: "Accès RH restreint. Autorisation spéciale requise."
         }
     },
 
