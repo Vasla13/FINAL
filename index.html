@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJET REGISTRE - AUTHENTIFICATION</title>
+    <title>BNI SECURE ACCESS - AUTHENTIFICATION</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/login.css">
 </head>
@@ -36,21 +36,29 @@ Tapez 'help' pour lister les commandes de récupération.</div>
     <div id="boot-screen"></div>
 
     <div class="login-container">
+        <div class="login-ambient" aria-hidden="true">
+            <span class="login-orbit login-orbit--1"></span>
+            <span class="login-orbit login-orbit--2"></span>
+            <span class="login-orbit login-orbit--3"></span>
+        </div>
         <div class="login-header">
-            <h1>PROJET REGISTRE</h1>
-            <h2>SYSTÈME CENTRAL ARCHIVAGE</h2>
+            <div class="login-kicker">BNI SECURE ACCESS NODE</div>
+            <h1>BNI SECURE ACCESS</h1>
+            <h2>INTERFACE D'AUTHENTIFICATION</h2>
         </div>
         
-        <div class="login-body">
+        <div class="login-body login-body--compact">
             <p class="instruction">Authentification requise.</p>
             <form id="loginForm">
                 <div class="input-group">
-                    <label for="username">Identifiant (Prénom Nom) :</label>
+                    <label for="username">Identifiant</label>
                     <input type="text" id="username" autocomplete="off" spellcheck="false" required>
                 </div>
-                <button type="submit">CONNEXION</button>
+                <button type="submit">
+                    <span class="submit-label">Connexion</span>
+                </button>
             </form>
-            <div id="errorMessage" class="error-message"></div>
+            <div id="errorMessage" class="error-message" aria-live="polite"></div>
         </div>
 
         <div class="login-footer">BUILD 4.02.11</div>

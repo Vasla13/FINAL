@@ -12,6 +12,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
     const errorMessage = document.getElementById('errorMessage');
+    const submitButton = loginForm?.querySelector('button[type="submit"]');
+    const submitLabel = submitButton?.querySelector('.submit-label');
+    const submitMeta = submitButton?.querySelector('.submit-meta');
     const skipRecovery = sessionStorage.getItem('registre_skip_recovery') === '1';
 
     let bootAudio = null;
@@ -145,6 +148,28 @@ document.addEventListener("DOMContentLoaded", () => {
         loginContainer?.classList.add('is-visible');
     }
 
+    function setLoginVisualState(state = "idle") {
+        loginContainer?.classList.remove('has-error', 'is-authenticating');
+        usernameInput?.removeAttribute('aria-invalid');
+
+        if (submitButton) submitButton.disabled = false;
+        if (submitLabel) submitLabel.textContent = "Connexion";
+        if (submitMeta) submitMeta.textContent = "Ouvrir la session restauree";
+
+        if (state === "error") {
+            loginContainer?.classList.add('has-error');
+            usernameInput?.setAttribute('aria-invalid', 'true');
+            if (submitMeta) submitMeta.textContent = "Verifier l'identite complete";
+        }
+
+        if (state === "authenticating") {
+            loginContainer?.classList.add('is-authenticating');
+            if (submitButton) submitButton.disabled = true;
+            if (submitLabel) submitLabel.textContent = "Connexion validee";
+            if (submitMeta) submitMeta.textContent = "Chargement du profil...";
+        }
+    }
+
     function typeBootLines() {
         if (lineIndex < bootSequence.length) {
             bootScreen.textContent += bootSequence[lineIndex] + "\n";
@@ -248,7 +273,7 @@ document.addEventListener("DOMContentLoaded", () => {
         usersExtracted = true;
         window.registreAudio?.play('authSuccess', { volume: 0.24 });
         hideChallengeOverlay();
-        appendHackOutput("Déchiffrement du registre 'users.dat'...");
+        appendHackOutput("Déchiffrement de l'archive 'users.dat'...");
         appendHackOutput("[ACCOUNTS RECOVERED] : Les profils suivants ont été identifiés dans le cache :\n- Noah Bennett\n- Olivia Reynolds\n- Madison Brooks\n- Emily Carter\n\nTapez 'boot' pour démarrer l'interface de connexion avec ces identifiants.");
     }
 
@@ -276,7 +301,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div class="challenge-frame">
                     <div class="challenge-kicker">BNI HUMAN RESOURCES VALIDATION</div>
                     <div class="challenge-title">CALIBRAGE DE LATENCE HUMAINE</div>
-                    <div class="challenge-copy">Le protocole R.E.G.I.S imite mal les micro-ajustements moteurs humains. Appuyez sur <strong>Espace</strong> au moment exact où l'impulsion traverse la fenêtre orange. Trois validations ouvrent le port 842.</div>
+                    <div class="challenge-copy">Le filtre automatisé distingue mal les micro-ajustements moteurs humains. Appuyez sur <strong>Espace</strong> au moment exact où l'impulsion traverse la fenêtre orange. Trois validations ouvrent le port 842.</div>
                     <div class="challenge-status">Stabilisez l'impulsion. Un échec réinitialise la séquence.</div>
                     <div class="sync-shell">
                         <div class="sync-progress">
@@ -466,6 +491,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
     }
 
+    setLoginVisualState();
+
     if (skipRecovery) {
         if (recoveryIntro) recoveryIntro.style.display = 'none';
         if (hackScreen) hackScreen.style.display = 'none';
@@ -529,9 +556,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (cmd === "help") {
-            response = "Commandes autorisées :\n- scan : Analyse les ports et vulnérabilités du disque.\n- bypass [port] : Tente une injection sur le port ciblé.\n- extract : Déchiffre le registre des utilisateurs.\n- boot : Lance l'interface graphique (GUI).";
+            response = "Commandes autorisées :\n- scan : Analyse les ports et vulnérabilités du disque.\n- bypass [port] : Tente une injection sur le port ciblé.\n- extract : Déchiffre l'archive des utilisateurs.\n- boot : Lance l'interface graphique (GUI).";
         } else if (cmd === "scan") {
-            response = "Analyse en cours...\n[PORT 22] : SSH - FERMÉ\n[PORT 80] : HTTP - FERMÉ\n[PORT 842] : PROTOCOLE R.E.G.I.S - OUVERT (Vulnérabilité critique détectée).";
+            response = "Analyse en cours...\n[PORT 22] : SSH - FERMÉ\n[PORT 80] : HTTP - FERMÉ\n[PORT 842] : SERVICE PROPRIÉTAIRE - OUVERT (Vulnérabilité critique détectée).";
         } else if (cmd.startsWith("bypass")) {
             const port = cmd.split(" ")[1];
             if (port === "842" && firewallBypassed) {
@@ -548,9 +575,9 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!firewallBypassed) {
                 response = "ACCÈS REFUSÉ. Le pare-feu système est toujours actif.";
             } else if (usersExtracted) {
-                response = "[ACCOUNTS RECOVERED] : Registre déjà extrait. Tapez 'boot' pour lancer l'interface graphique.";
+                response = "[ACCOUNTS RECOVERED] : Archive déjà extraite. Tapez 'boot' pour lancer l'interface graphique.";
             } else {
-                response = "Le registre utilisateurs est encapsulé derrière un adware obsolète. Neutralisation manuelle requise.";
+                response = "L'archive utilisateurs est encapsulée derrière un adware obsolète. Neutralisation manuelle requise.";
                 appendHackOutput(response);
                 startPopupCleanupChallenge();
                 return;
@@ -627,9 +654,15 @@ document.addEventListener("DOMContentLoaded", () => {
         "emily carter": "e.carter"
     };
 
+    usernameInput?.addEventListener('input', () => {
+        if (errorMessage.textContent) errorMessage.textContent = "";
+        setLoginVisualState();
+    });
+
     loginForm.addEventListener('submit', (e) => {
         e.preventDefault();
         errorMessage.textContent = "";
+        setLoginVisualState();
         const rawInput = usernameInput.value.trim().toLowerCase();
 
         if (authorizedUsers[rawInput]) {
@@ -637,11 +670,13 @@ document.addEventListener("DOMContentLoaded", () => {
             sessionStorage.setItem('registre_active_user', authorizedUsers[rawInput]);
             sessionStorage.setItem('registre_display_name', usernameInput.value.trim());
             window.registreAudio?.play('authSuccess', { volume: 0.34 });
+            setLoginVisualState("authenticating");
             errorMessage.style.color = "#27ae60";
             errorMessage.textContent = "Habilitation confirmée. Chargement du profil...";
             window.setTimeout(() => { window.location.href = "desktop.html"; }, 1200);
         } else {
             window.registreAudio?.play('authError', { volume: 0.26 });
+            setLoginVisualState("error");
             errorMessage.style.color = "var(--error-color)";
             errorMessage.textContent = "Erreur : Identifiant inconnu ou profil archivé.";
             usernameInput.value = "";
