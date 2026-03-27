@@ -383,6 +383,18 @@ body.is-regis-glitch[data-profile="e.carter"] .terminal-output {
     background: linear-gradient(180deg, rgba(6, 13, 19, 0.96) 0%, rgba(12, 26, 35, 0.96) 100%);
 }
 
+body[data-profile="n.bennett"] .os-window[data-app="terminal"] .window-header {
+    background: linear-gradient(180deg, rgba(235, 241, 246, 0.99) 0%, rgba(224, 232, 239, 0.99) 100%);
+    color: #21323e;
+    border-bottom-color: rgba(107, 181, 219, 0.18);
+}
+
+body[data-profile="o.reynolds"] .os-window[data-app="terminal"] .window-header {
+    background: linear-gradient(180deg, rgba(188, 178, 159, 0.99) 0%, rgba(166, 154, 133, 0.99) 100%);
+    color: #443728;
+    border-bottom-color: rgba(129, 113, 84, 0.18);
+}
+
 .os-window[data-app="terminal"] .window-content {
     background: transparent;
 }

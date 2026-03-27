@@ -107,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('logout-btn').addEventListener('click', () => {
         cleanupDesktopRuntime();
         sessionStorage.clear();
+        sessionStorage.setItem('registre_skip_recovery', '1');
         document.getElementById('window-area').innerHTML = "";
         document.getElementById('system-status').textContent = "FERMETURE DE SESSION...";
         setTimeout(() => { window.location.href = "index.html"; }, 800);

@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const loginForm = document.getElementById('loginForm');
     const usernameInput = document.getElementById('username');
     const errorMessage = document.getElementById('errorMessage');
+    const skipRecovery = sessionStorage.getItem('registre_skip_recovery') === '1';
 
     let bootAudio = null;
     let introAudio = null;
@@ -465,7 +466,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1000);
     }
 
-    if (sessionStorage.getItem('registre_active_user')) {
+    if (skipRecovery) {
+        if (recoveryIntro) recoveryIntro.style.display = 'none';
+        if (hackScreen) hackScreen.style.display = 'none';
+        if (challengeOverlay) {
+            challengeOverlay.hidden = true;
+            challengeOverlay.innerHTML = "";
+        }
+        if (bootScreen) bootScreen.style.display = 'none';
+        revealLoginScreen();
+        window.setTimeout(() => usernameInput?.focus(), 40);
+    } else if (sessionStorage.getItem('registre_active_user')) {
         if (recoveryIntro) recoveryIntro.style.display = 'none';
         if (hackScreen) hackScreen.style.display = 'none';
         if (challengeOverlay) challengeOverlay.hidden = true;
@@ -622,6 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const rawInput = usernameInput.value.trim().toLowerCase();
 
         if (authorizedUsers[rawInput]) {
+            sessionStorage.removeItem('registre_skip_recovery');
             sessionStorage.setItem('registre_active_user', authorizedUsers[rawInput]);
             sessionStorage.setItem('registre_display_name', usernameInput.value.trim());
             window.registreAudio?.play('authSuccess', { volume: 0.34 });
