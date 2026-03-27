@@ -9,6 +9,18 @@
 </head>
 <body>
 
+    <div id="recovery-intro">
+        <div class="recovery-panel">
+            <div class="recovery-kicker">BNI SECURE RECOVERY ENVIRONMENT</div>
+            <div class="recovery-title">RECOVERY SHELL BOOTSTRAP</div>
+            <div id="recovery-output"></div>
+            <div class="recovery-progress">
+                <span id="recovery-progress-bar"></span>
+            </div>
+            <div id="recovery-status">MONTAGE DU SHELL DE RÉCUPÉRATION...</div>
+        </div>
+    </div>
+
     <div id="hack-screen">
         <div id="hack-output">BNI_SECURE_OS v.2.4 - ACCÈS VERROUILLÉ.
 Interface graphique hors ligne. Système de fichiers crypté.
@@ -18,6 +30,8 @@ Tapez 'help' pour lister les commandes de récupération.</div>
             <input type="text" id="hack-input" autocomplete="off" spellcheck="false" autofocus>
         </div>
     </div>
+
+    <div id="challenge-overlay" hidden></div>
 
     <div id="boot-screen"></div>
 

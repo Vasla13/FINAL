@@ -97,19 +97,22 @@
 }
 
 #logout-btn {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(208, 91, 69, 0.35);
-    color: var(--surface-color);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(208, 91, 69, 0.52);
+    color: #f8fbfd;
     padding: 6px 12px;
     font-size: 10px;
+    font-weight: 700;
     letter-spacing: 1.5px;
     border-radius: 999px;
-    box-shadow: none;
+    text-shadow: none;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 #logout-btn:hover {
-    background-color: rgba(208, 91, 69, 0.18);
-    border-color: rgba(208, 91, 69, 0.72);
+    background-color: rgba(208, 91, 69, 0.22);
+    border-color: rgba(208, 91, 69, 0.82);
+    color: #ffffff;
 }
 
 #main-workspace {
@@ -309,7 +312,7 @@
     position: absolute;
     top: 20px;
     right: 24px;
-    display: inline-flex;
+    display: none;
     align-items: center;
     gap: 8px;
     padding: 8px 12px;
@@ -550,6 +553,19 @@ body[data-profile="n.bennett"] #system-status {
     color: #23333f;
 }
 
+body[data-profile="n.bennett"] #logout-btn {
+    background: linear-gradient(180deg, rgba(250, 252, 254, 0.98) 0%, rgba(231, 238, 244, 0.98) 100%);
+    border-color: rgba(129, 170, 201, 0.38);
+    color: #223641;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.72);
+}
+
+body[data-profile="n.bennett"] #logout-btn:hover {
+    background: linear-gradient(180deg, rgba(242, 248, 252, 0.99) 0%, rgba(221, 233, 242, 0.99) 100%);
+    border-color: rgba(107, 181, 219, 0.56);
+    color: #18303c;
+}
+
 body[data-profile="n.bennett"] .app-link {
     color: #22343f;
     background: rgba(255, 255, 255, 0.74);
@@ -623,10 +639,6 @@ body[data-profile="m.brooks"] #current-user-display,
 body[data-profile="m.brooks"] #system-status,
 body[data-profile="m.brooks"] .app-link {
     color: rgba(221, 229, 222, 0.86);
-}
-
-body[data-profile="m.brooks"] #desk-rec-indicator {
-    display: inline-flex;
 }
 
 body[data-profile="o.reynolds"] #os-container {

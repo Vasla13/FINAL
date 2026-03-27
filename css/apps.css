@@ -162,10 +162,80 @@ body[data-profile="n.bennett"] .message-copy {
     color: #223641;
 }
 
+body[data-profile="n.bennett"] .list-pane {
+    background: linear-gradient(180deg, #eef4f8 0%, #e4edf3 100%);
+    border-right-color: rgba(129, 170, 201, 0.18);
+}
+
+body[data-profile="n.bennett"] .list-item {
+    color: #213440;
+    border-bottom-color: rgba(129, 170, 201, 0.14);
+}
+
+body[data-profile="n.bennett"] .list-item:hover {
+    background: rgba(107, 181, 219, 0.08);
+}
+
+body[data-profile="n.bennett"] .list-item.active {
+    background: linear-gradient(90deg, rgba(124, 186, 219, 0.16) 0%, rgba(255, 255, 255, 0.68) 100%);
+    box-shadow: inset 3px 0 0 rgba(107, 181, 219, 0.88);
+}
+
+body[data-profile="n.bennett"] .item-tag {
+    color: #2c607e;
+    border-color: rgba(107, 181, 219, 0.26);
+    background: rgba(107, 181, 219, 0.08);
+}
+
+body[data-profile="n.bennett"] .item-meta {
+    color: rgba(33, 52, 64, 0.62);
+}
+
+body[data-profile="n.bennett"] .message-header {
+    border-bottom-color: rgba(107, 181, 219, 0.14);
+}
+
 body[data-profile="n.bennett"] .message-row strong,
 body[data-profile="n.bennett"] .doc-kicker,
 body[data-profile="n.bennett"] .doc-subject {
     color: rgba(37, 74, 98, 0.74);
+}
+
+body[data-profile="n.bennett"] .message-copy {
+    border-color: rgba(129, 170, 201, 0.18);
+    box-shadow: 0 10px 24px rgba(118, 140, 157, 0.08);
+}
+
+body[data-profile="n.bennett"] .terminal-window {
+    background:
+        radial-gradient(circle at top right, rgba(107, 181, 219, 0.08), transparent 24%),
+        linear-gradient(180deg, rgba(247, 251, 254, 0.99) 0%, rgba(236, 243, 248, 0.99) 100%);
+    color: #223641;
+}
+
+body[data-profile="n.bennett"] .terminal-chrome {
+    color: rgba(44, 96, 126, 0.92);
+}
+
+body[data-profile="n.bennett"] .terminal-output {
+    border-color: rgba(129, 170, 201, 0.18);
+    background: rgba(255, 255, 255, 0.74);
+    color: #223641;
+    text-shadow: none;
+}
+
+body[data-profile="n.bennett"] .terminal-line--command,
+body[data-profile="n.bennett"] .terminal-prompt {
+    color: #8a6a1d;
+}
+
+body[data-profile="n.bennett"] .terminal-input-line {
+    border-color: rgba(129, 170, 201, 0.18);
+    background: rgba(255, 255, 255, 0.62);
+}
+
+body[data-profile="n.bennett"] .terminal-input {
+    color: #223641;
 }
 
 body[data-profile="o.reynolds"] .os-window {

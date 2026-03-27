@@ -651,7 +651,10 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         function clearPrankSequence() {
-            prankState.timers.forEach((timerId) => window.clearTimeout(timerId));
+            prankState.timers.forEach((timerId) => {
+                window.clearTimeout(timerId);
+                window.clearInterval(timerId);
+            });
             prankState.timers = [];
             prankState.active = false;
             if (prankState.screen) {
@@ -921,60 +924,386 @@ document.addEventListener("DOMContentLoaded", () => {
             prankScreen.style.left = "0";
             prankScreen.style.width = "100vw";
             prankScreen.style.height = "100vh";
-            prankScreen.style.backgroundColor = "#800000";
-            prankScreen.style.color = "#ff4d4d";
-            prankScreen.style.fontFamily = "monospace";
-            prankScreen.style.fontSize = "24px";
-            prankScreen.style.padding = "50px";
+            prankScreen.style.background = "radial-gradient(circle at 50% 12%, rgba(207, 33, 33, 0.16), transparent 22%), linear-gradient(180deg, #050506 0%, #140304 52%, #010101 100%)";
+            prankScreen.style.color = "#ffd8d8";
+            prankScreen.style.fontFamily = "Consolas, monospace";
             prankScreen.style.zIndex = "999999";
             prankScreen.style.display = "flex";
             prankScreen.style.flexDirection = "column";
             prankScreen.style.justifyContent = "center";
             prankScreen.style.alignItems = "center";
-            prankScreen.style.textAlign = "center";
+            prankScreen.style.padding = "28px";
+            prankScreen.style.overflow = "hidden";
+            prankScreen.style.cursor = "none";
 
-            const lines = [
-                "DÉTECTION D'INTRUSION...",
-                "UTILISATEUR NON RECONNU.",
-                "VIOLATION DU PROTOCOLE BNI DE NIVEAU 4.",
-                "LOCALISATION DU MATÉRIEL IDENTIFIÉE.",
-                "ARMEMENT DE LA CHARGE EXPLOSIVE DU DISQUE DUR...",
-                "DÉTONATION DANS : 5",
-                "4",
-                "3",
-                "2",
-                "1",
-                "...",
-                "🤡 ON VOUS A BIEN EU.",
-                "C'est nous. On a codé ça pendant la pause déj.",
-                "Si vous avez flippé, c'est que vous ne faites pas partie de l'équipe.",
-                "Fermeture du script de sécurité."
+            const scanline = document.createElement('div');
+            scanline.style.position = "absolute";
+            scanline.style.left = "0";
+            scanline.style.right = "0";
+            scanline.style.top = "0";
+            scanline.style.height = "160px";
+            scanline.style.opacity = "0.24";
+            scanline.style.pointerEvents = "none";
+            scanline.style.mixBlendMode = "screen";
+            scanline.style.background = "linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,120,120,0.12) 25%, rgba(255,255,255,0.24) 50%, rgba(255,120,120,0.14) 70%, rgba(255,255,255,0) 100%)";
+            prankScreen.appendChild(scanline);
+
+            const hazardTop = document.createElement('div');
+            hazardTop.style.position = "absolute";
+            hazardTop.style.top = "0";
+            hazardTop.style.left = "0";
+            hazardTop.style.right = "0";
+            hazardTop.style.height = "22px";
+            hazardTop.style.background = "repeating-linear-gradient(135deg, rgba(255, 86, 86, 0.9) 0 18px, rgba(15, 10, 10, 0.95) 18px 36px)";
+            hazardTop.style.boxShadow = "0 0 24px rgba(255, 64, 64, 0.22)";
+            prankScreen.appendChild(hazardTop);
+
+            const hazardBottom = hazardTop.cloneNode();
+            hazardBottom.style.top = "auto";
+            hazardBottom.style.bottom = "0";
+            prankScreen.appendChild(hazardBottom);
+
+            const pulseOverlay = document.createElement('div');
+            pulseOverlay.style.position = "absolute";
+            pulseOverlay.style.inset = "0";
+            pulseOverlay.style.background = "radial-gradient(circle at center, rgba(255, 58, 58, 0.1), transparent 52%)";
+            pulseOverlay.style.opacity = "0";
+            pulseOverlay.style.pointerEvents = "none";
+            pulseOverlay.style.transition = "opacity 0.12s linear";
+            prankScreen.appendChild(pulseOverlay);
+
+            const hud = document.createElement('div');
+            hud.style.position = "relative";
+            hud.style.width = "min(1280px, calc(100vw - 56px))";
+            hud.style.display = "grid";
+            hud.style.gridTemplateColumns = "minmax(0, 1.45fr) minmax(340px, 0.9fr)";
+            hud.style.gap = "18px";
+            hud.style.alignItems = "stretch";
+            hud.style.textAlign = "left";
+            hud.style.transition = "transform 0.08s linear";
+
+            const consolePanel = document.createElement('section');
+            consolePanel.style.position = "relative";
+            consolePanel.style.border = "1px solid rgba(255, 84, 84, 0.28)";
+            consolePanel.style.background = "linear-gradient(180deg, rgba(13, 13, 15, 0.97) 0%, rgba(7, 4, 4, 0.97) 100%)";
+            consolePanel.style.boxShadow = "0 28px 90px rgba(0, 0, 0, 0.66), inset 0 0 0 1px rgba(255,255,255,0.03)";
+            consolePanel.style.padding = "26px 28px 30px";
+            consolePanel.style.overflow = "hidden";
+
+            const topbar = document.createElement('div');
+            topbar.style.display = "flex";
+            topbar.style.justifyContent = "space-between";
+            topbar.style.flexWrap = "wrap";
+            topbar.style.gap = "18px";
+            topbar.style.marginBottom = "20px";
+            topbar.style.fontSize = "12px";
+            topbar.style.letterSpacing = "2px";
+            topbar.style.textTransform = "uppercase";
+            topbar.style.color = "rgba(255, 120, 120, 0.78)";
+            topbar.innerHTML = `
+                <span>CERBERUS // MATÉRIAL PURGE LAYER</span>
+                <span>SESSION TRACE : ${escapeHTML((currentUser || "unknown").toUpperCase())}</span>
+                <span>SATA0 / NV-CACHE / UPS CLAMP</span>
+            `;
+
+            const title = document.createElement('div');
+            title.textContent = "ARMEMENT DE LA CHARGE DU DISQUE";
+            title.style.fontSize = "clamp(32px, 4vw, 60px)";
+            title.style.lineHeight = "0.9";
+            title.style.letterSpacing = "4px";
+            title.style.textTransform = "uppercase";
+            title.style.color = "#fff2f2";
+            title.style.marginBottom = "10px";
+            title.style.textShadow = "0 0 24px rgba(255, 64, 64, 0.16)";
+
+            const subtitle = document.createElement('div');
+            subtitle.textContent = "Binaire interdit déclenché. La micro-charge interne du SSD local entre en séquence d'armement.";
+            subtitle.style.fontSize = "14px";
+            subtitle.style.letterSpacing = "1.3px";
+            subtitle.style.color = "rgba(255, 182, 182, 0.72)";
+            subtitle.style.marginBottom = "18px";
+
+            const progressFrame = document.createElement('div');
+            progressFrame.style.height = "14px";
+            progressFrame.style.border = "1px solid rgba(255, 84, 84, 0.22)";
+            progressFrame.style.background = "rgba(255,255,255,0.04)";
+            progressFrame.style.overflow = "hidden";
+            progressFrame.style.marginBottom = "18px";
+
+            const progressBar = document.createElement('div');
+            progressBar.style.width = "0%";
+            progressBar.style.height = "100%";
+            progressBar.style.background = "linear-gradient(90deg, #8a1111 0%, #ff4a4a 100%)";
+            progressBar.style.boxShadow = "0 0 24px rgba(255, 74, 74, 0.18)";
+            progressBar.style.transition = "width 0.24s ease";
+            progressFrame.appendChild(progressBar);
+
+            const textContainer = document.createElement('div');
+            textContainer.style.minHeight = "380px";
+            textContainer.style.maxHeight = "56vh";
+            textContainer.style.overflow = "auto";
+            textContainer.style.padding = "20px 22px";
+            textContainer.style.border = "1px solid rgba(255, 84, 84, 0.14)";
+            textContainer.style.background = "linear-gradient(180deg, rgba(10, 6, 6, 0.98) 0%, rgba(4, 3, 3, 0.98) 100%)";
+            textContainer.style.fontSize = "20px";
+            textContainer.style.lineHeight = "1.45";
+            textContainer.style.letterSpacing = "1.2px";
+            textContainer.style.boxShadow = "inset 0 0 0 1px rgba(255,255,255,0.02)";
+
+            const footer = document.createElement('div');
+            footer.style.display = "flex";
+            footer.style.justifyContent = "space-between";
+            footer.style.flexWrap = "wrap";
+            footer.style.gap = "16px";
+            footer.style.marginTop = "16px";
+            footer.style.fontSize = "12px";
+            footer.style.textTransform = "uppercase";
+            footer.style.letterSpacing = "1.8px";
+            footer.style.color = "rgba(255, 165, 165, 0.64)";
+            footer.innerHTML = `
+                <span>NODE // LOCAL SSD / CHARGE ARMÉE</span>
+                <span>POWER CUTOFF : LOCKED</span>
+                <span>PHYSICAL OVERRIDE : DENIED</span>
+            `;
+
+            const statusPanel = document.createElement('aside');
+            statusPanel.style.position = "relative";
+            statusPanel.style.display = "grid";
+            statusPanel.style.gridTemplateRows = "auto auto auto 1fr auto";
+            statusPanel.style.gap = "14px";
+            statusPanel.style.border = "1px solid rgba(255, 84, 84, 0.24)";
+            statusPanel.style.background = "linear-gradient(180deg, rgba(12, 8, 8, 0.97) 0%, rgba(6, 4, 4, 0.97) 100%)";
+            statusPanel.style.boxShadow = "0 24px 72px rgba(0, 0, 0, 0.54), inset 0 0 0 1px rgba(255,255,255,0.02)";
+            statusPanel.style.padding = "24px";
+
+            const etaLabel = document.createElement('div');
+            etaLabel.textContent = "DÉTONATION DU DISQUE";
+            etaLabel.style.fontSize = "12px";
+            etaLabel.style.textTransform = "uppercase";
+            etaLabel.style.letterSpacing = "2.2px";
+            etaLabel.style.color = "rgba(255, 135, 135, 0.72)";
+
+            const countdownDisplay = document.createElement('div');
+            countdownDisplay.textContent = "--";
+            countdownDisplay.style.fontSize = "clamp(84px, 16vw, 160px)";
+            countdownDisplay.style.fontWeight = "700";
+            countdownDisplay.style.lineHeight = "0.9";
+            countdownDisplay.style.letterSpacing = "4px";
+            countdownDisplay.style.color = "#fff4f4";
+            countdownDisplay.style.textShadow = "0 0 28px rgba(255, 72, 72, 0.3)";
+
+            const directive = document.createElement('div');
+            directive.textContent = "NE PAS COUPER L'ALIMENTATION // LA CHARGE SSD EST EN COURS D'ARMEMENT";
+            directive.style.padding = "14px 16px";
+            directive.style.border = "1px solid rgba(255, 84, 84, 0.22)";
+            directive.style.background = "rgba(255, 84, 84, 0.08)";
+            directive.style.fontSize = "12px";
+            directive.style.lineHeight = "1.55";
+            directive.style.letterSpacing = "1.6px";
+            directive.style.textTransform = "uppercase";
+            directive.style.color = "#ffd7d7";
+
+            const metricsGrid = document.createElement('div');
+            metricsGrid.style.display = "grid";
+            metricsGrid.style.gridTemplateColumns = "1fr";
+            metricsGrid.style.gap = "10px";
+
+            function createMetric(label, initialValue) {
+                const card = document.createElement('div');
+                card.style.padding = "12px 14px";
+                card.style.border = "1px solid rgba(255, 84, 84, 0.16)";
+                card.style.background = "rgba(255, 255, 255, 0.03)";
+
+                const name = document.createElement('div');
+                name.textContent = label;
+                name.style.fontSize = "11px";
+                name.style.textTransform = "uppercase";
+                name.style.letterSpacing = "1.8px";
+                name.style.color = "rgba(255, 150, 150, 0.62)";
+                name.style.marginBottom = "8px";
+
+                const value = document.createElement('div');
+                value.textContent = initialValue;
+                value.style.fontSize = "20px";
+                value.style.lineHeight = "1.2";
+                value.style.color = "#fff1f1";
+
+                card.append(name, value);
+                metricsGrid.appendChild(card);
+                return value;
+            }
+
+            const stateValue = createMetric("CHARGE SSD", "désarmée");
+            const traceValue = createMetric("TRACE", "corrélation active");
+            const thermalValue = createMetric("THERMIQUE", "41C");
+            const powerValue = createMetric("ALIMENTATION", "stable");
+
+            const telemetry = document.createElement('div');
+            telemetry.style.display = "grid";
+            telemetry.style.gap = "10px";
+            telemetry.style.alignContent = "start";
+            telemetry.style.padding = "14px";
+            telemetry.style.border = "1px solid rgba(255, 84, 84, 0.18)";
+            telemetry.style.background = "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)";
+
+            const telemetryLabel = document.createElement('div');
+            telemetryLabel.textContent = "ARMEMENT DE LA CHARGE";
+            telemetryLabel.style.fontSize = "11px";
+            telemetryLabel.style.letterSpacing = "2px";
+            telemetryLabel.style.textTransform = "uppercase";
+            telemetryLabel.style.color = "rgba(255, 150, 150, 0.62)";
+
+            const telemetryBarFrame = document.createElement('div');
+            telemetryBarFrame.style.height = "12px";
+            telemetryBarFrame.style.border = "1px solid rgba(255, 84, 84, 0.18)";
+            telemetryBarFrame.style.background = "rgba(255,255,255,0.03)";
+            telemetryBarFrame.style.overflow = "hidden";
+
+            const telemetryBar = document.createElement('div');
+            telemetryBar.style.height = "100%";
+            telemetryBar.style.width = "8%";
+            telemetryBar.style.background = "linear-gradient(90deg, #751313 0%, #ff5d5d 100%)";
+            telemetryBar.style.transition = "width 0.18s ease";
+            telemetryBarFrame.appendChild(telemetryBar);
+
+            const telemetryValue = document.createElement('div');
+            telemetryValue.textContent = "8%";
+            telemetryValue.style.fontSize = "28px";
+            telemetryValue.style.letterSpacing = "1px";
+            telemetryValue.style.color = "#fff2f2";
+
+            telemetry.append(telemetryLabel, telemetryBarFrame, telemetryValue);
+            statusPanel.append(etaLabel, countdownDisplay, directive, metricsGrid, telemetry);
+            consolePanel.append(topbar, title, subtitle, progressFrame, textContainer, footer);
+            hud.append(consolePanel, statusPanel);
+            prankScreen.appendChild(hud);
+
+            const steps = [
+                { text: "CERBERUS // EXÉCUTABLE PIÉGÉ DÉTECTÉ. ARMEMENT DE LA CHARGE DU DISQUE ENGAGÉ.", state: "armement", trace: "empreinte rapprochée", thermal: "41C", power: "stable", purge: 12, countdown: "--" },
+                { text: "SESSION CORRÉLÉE. LE SSD LOCAL RESTE SOUS TENSION ET PASSE SOUS TUTELLE.", state: "verrouillée", trace: "bus HID scellé", thermal: "46C", power: "stable", purge: 24, countdown: "--" },
+                { text: "MICRO-CHARGE INTERNE DU SUPPORT SATA0 : SÉQUENCE D'ARMEMENT ACTIVE.", state: "armement", trace: "sata rerouté", thermal: "55C", power: "scellée", purge: 42, countdown: "--" },
+                { text: "COUPURE D'ALIMENTATION INTERDITE. LA CHARGE DÉTONERA DANS LE DISQUE.", state: "verrou alim", trace: "UPS clamp", thermal: "63C", power: "scellée", purge: 58, countdown: "--" },
+                { text: "DÉTONATION INTERNE DU SSD IMMINENTE.", state: "prête", trace: "impact armé", thermal: "81C", power: "critique", purge: 76, countdown: "--" },
+                { text: "DÉTONATION SSD : 03", state: "prête", trace: "fenêtre critique", thermal: "87C", power: "critique", purge: 88, countdown: "03" },
+                { text: "DÉTONATION SSD : 02", state: "prête", trace: "fenêtre critique", thermal: "92C", power: "impact", purge: 95, countdown: "02" },
+                { text: "DÉTONATION SSD : 01", state: "prête", trace: "détonation logique", thermal: "96C", power: "impact", purge: 99, countdown: "01" },
+                { text: "OVERRIDE INTERNE DÉTECTÉ. CHARGE DU DISQUE DÉSACTIVÉE.", state: "désarmée", trace: "override interne", thermal: "41C", power: "relâchée", purge: 100, countdown: "00" },
+                { text: "Il n'y avait évidemment aucune bombe dans le disque. Juste un test de panique.", state: "désarmée", trace: "social test", thermal: "41C", power: "nominale", purge: 100, countdown: "--" },
+                { text: "Le nom top_secret_do_not_run.exe était déjà l'avertissement.", state: "révélation", trace: "avertissement ignoré", thermal: "41C", power: "nominale", purge: 100, countdown: "--" },
+                { text: "Signature interne : Emily Carter / Noah Bennett.", state: "révélation", trace: "journal fermé", thermal: "41C", power: "nominale", purge: 100, countdown: "--" }
             ];
 
             let delay = 0;
-            prankScreen.innerHTML = "<div></div>";
-            const textContainer = prankScreen.querySelector('div');
+            const threatPhaseCount = 8;
+            const totalSteps = steps.length;
+            let scanlineOffset = -180;
 
-            lines.forEach((line, index) => {
-                delay += (index > 4 && index < 10) ? 1000 : 2000;
+            const scanlineTimer = window.setInterval(() => {
+                if (!prankState.screen) return;
+                scanlineOffset += 10;
+                if (scanlineOffset > window.innerHeight + 180) scanlineOffset = -180;
+                scanline.style.transform = `translateY(${scanlineOffset}px)`;
+            }, 26);
+            prankState.timers.push(scanlineTimer);
+
+            const jitter = window.setInterval(() => {
+                if (!prankState.screen) return;
+                const intensity = countdownDisplay.textContent !== "--" && countdownDisplay.textContent !== "00" ? 2.2 : 0.9;
+                const x = ((Math.random() * 2) - 1) * intensity;
+                const y = ((Math.random() * 2) - 1) * intensity;
+                hud.style.transform = `translate(${x.toFixed(2)}px, ${y.toFixed(2)}px)`;
+            }, 84);
+            prankState.timers.push(jitter);
+
+            steps.forEach((step, index) => {
+                delay += index < 5 ? 1500 : (index < threatPhaseCount ? 1300 : 1800);
 
                 const timerId = window.setTimeout(() => {
                     if (!prankState.screen) return;
 
-                    if (index >= 11) {
-                        prankScreen.style.backgroundColor = "#000";
-                        prankScreen.style.color = "#0f0";
+                    const progress = Math.round(((index + 1) / totalSteps) * 100);
+                    progressBar.style.width = `${progress}%`;
+                    telemetryBar.style.width = `${step.purge}%`;
+                    telemetryValue.textContent = `${step.purge}%`;
+                    stateValue.textContent = step.state;
+                    traceValue.textContent = step.trace;
+                    thermalValue.textContent = step.thermal;
+                    powerValue.textContent = step.power;
+                    countdownDisplay.textContent = step.countdown;
+                    pulseOverlay.style.opacity = index >= 4 && index < threatPhaseCount ? "0.22" : "0";
+
+                    if (index === 4) {
+                        title.textContent = "DÉSTRUCTION MATÉRIELLE IMMINENTE";
+                        subtitle.textContent = "Le nœud local ne répond plus aux sécurités opérateur.";
                     }
 
-                    textContainer.innerHTML += `<p style="margin: 10px 0;">${line}</p>`;
+                    if (index >= threatPhaseCount) {
+                        prankScreen.style.background = "radial-gradient(circle at 50% 12%, rgba(166, 255, 166, 0.1), transparent 24%), linear-gradient(180deg, #020402 0%, #020602 52%, #000000 100%)";
+                        consolePanel.style.borderColor = "rgba(148, 255, 146, 0.22)";
+                        consolePanel.style.background = "linear-gradient(180deg, rgba(7, 12, 7, 0.97) 0%, rgba(3, 6, 3, 0.97) 100%)";
+                        statusPanel.style.borderColor = "rgba(148, 255, 146, 0.18)";
+                        statusPanel.style.background = "linear-gradient(180deg, rgba(7, 12, 7, 0.96) 0%, rgba(3, 6, 3, 0.96) 100%)";
+                        title.textContent = "TEST DE DISCIPLINE OPÉRATIONNELLE";
+                        title.style.color = "#efffea";
+                        title.style.textShadow = "0 0 24px rgba(126, 255, 126, 0.12)";
+                        subtitle.textContent = "Aucune charge réelle. Simple vérification de sang-froid.";
+                        subtitle.style.color = "rgba(192, 255, 187, 0.72)";
+                        topbar.style.color = "rgba(166, 255, 166, 0.72)";
+                        footer.style.color = "rgba(166, 255, 166, 0.58)";
+                        progressBar.style.background = "linear-gradient(90deg, #195319 0%, #82ff82 100%)";
+                        textContainer.style.borderColor = "rgba(118, 255, 113, 0.12)";
+                        textContainer.style.background = "linear-gradient(180deg, rgba(5, 9, 5, 0.98) 0%, rgba(2, 4, 2, 0.98) 100%)";
+                        textContainer.style.color = "#dcffd7";
+                        etaLabel.style.color = "rgba(166, 255, 166, 0.72)";
+                        directive.style.borderColor = "rgba(118, 255, 113, 0.14)";
+                        directive.style.background = "rgba(118, 255, 113, 0.06)";
+                        directive.style.color = "#d7ffd3";
+                        telemetryLabel.style.color = "rgba(166, 255, 166, 0.64)";
+                        telemetryBar.style.background = "linear-gradient(90deg, #1d611d 0%, #88ff88 100%)";
+                        telemetryValue.style.color = "#eeffe8";
+                        countdownDisplay.style.color = "#ecffe9";
+                        countdownDisplay.style.textShadow = "0 0 28px rgba(126, 255, 126, 0.18)";
+                    }
 
-                    if (index < 11) {
-                        const beep = new Audio('assets/audio/ui_select.wav');
-                        beep.volume = 0.8;
+                    if (index === threatPhaseCount) {
+                        prankScreen.style.filter = "brightness(1.45)";
+                        const flashTimer = window.setTimeout(() => {
+                            if (prankState.screen) prankScreen.style.filter = "brightness(1)";
+                        }, 120);
+                        prankState.timers.push(flashTimer);
+                    }
+
+                    const lineNode = document.createElement('p');
+                    lineNode.textContent = step.text;
+                    lineNode.style.margin = "0 0 12px 0";
+                    lineNode.style.color = index < threatPhaseCount ? "#ffd4d4" : "#dbffd8";
+                    lineNode.style.textTransform = index < threatPhaseCount ? "uppercase" : "none";
+                    lineNode.style.letterSpacing = index < threatPhaseCount ? "1.6px" : "0.8px";
+                    lineNode.style.textShadow = index < threatPhaseCount ? "0 0 16px rgba(255,84,84,0.12)" : "0 0 16px rgba(118,255,113,0.08)";
+                    textContainer.appendChild(lineNode);
+                    textContainer.scrollTop = textContainer.scrollHeight;
+
+                    if (index < threatPhaseCount) {
+                        const beep = new Audio('assets/audio/ui_select_regis.wav');
+                        beep.volume = index >= 5 ? 0.92 : 0.72;
+                        beep.playbackRate = index >= 5 ? 1.02 + ((index - 5) * 0.07) : 0.82 + (index * 0.04);
                         beep.play().catch(() => {});
-                    } else if (index === 11) {
-                        const errorSnd = new Audio('assets/audio/auth_error.wav');
-                        errorSnd.play().catch(() => {});
+
+                        if (index >= 4) {
+                            const sweep = new Audio('assets/audio/ui_open_regis.wav');
+                            sweep.volume = 0.14;
+                            sweep.playbackRate = 0.92 + (index * 0.02);
+                            sweep.play().catch(() => {});
+                        }
+                    } else if (index === threatPhaseCount) {
+                        const revealHit = new Audio('assets/audio/auth_error.wav');
+                        revealHit.volume = 0.72;
+                        revealHit.play().catch(() => {});
+
+                        const release = new Audio('assets/audio/auth_success.wav');
+                        release.volume = 0.34;
+                        const releaseTimer = window.setTimeout(() => release.play().catch(() => {}), 180);
+                        prankState.timers.push(releaseTimer);
                     }
                 }, delay);
 
@@ -983,10 +1312,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const endTimer = window.setTimeout(() => {
                 clearPrankSequence();
-                appendOutput("> Fichier exécuté. Fin du programme.");
+                appendOutput("> top_secret_do_not_run.exe terminé. Le test de panique est archivé.");
                 inputField.focus();
                 scheduleGhostTyping();
-            }, delay + 5000);
+            }, delay + 5200);
             prankState.timers.push(endTimer);
         }
 

@@ -9,7 +9,21 @@
     flex-direction: column;
     overflow: hidden;
     backdrop-filter: blur(14px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(18px) scale(0.985);
+    transition:
+        opacity 0.45s ease,
+        transform 0.45s ease,
+        visibility 0s linear 0.45s;
+}
+
+.login-container.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
     animation: floatIn 0.7s ease;
+    transition-delay: 0s;
 }
 
 .login-container::before {
@@ -133,6 +147,117 @@ button[type="submit"]:hover {
     letter-spacing: 0.9px;
 }
 
+#recovery-intro {
+    position: fixed;
+    inset: 0;
+    z-index: 10020;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    background:
+        radial-gradient(circle at 14% 18%, rgba(88, 165, 208, 0.12), transparent 22%),
+        radial-gradient(circle at 86% 14%, rgba(211, 163, 93, 0.08), transparent 18%),
+        linear-gradient(180deg, #010304 0%, #05080b 48%, #020406 100%);
+    transition: opacity 0.8s ease;
+}
+
+#recovery-intro::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.035) 0,
+        rgba(255, 255, 255, 0.035) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    opacity: 0.24;
+    pointer-events: none;
+}
+
+#recovery-intro.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.recovery-panel {
+    position: relative;
+    width: min(920px, 100%);
+    min-height: 420px;
+    padding: 28px 30px 26px;
+    border: 1px solid rgba(126, 171, 196, 0.2);
+    background: linear-gradient(180deg, rgba(6, 13, 19, 0.94) 0%, rgba(4, 8, 12, 0.92) 100%);
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.5),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    color: #cbe0ec;
+    font-family: var(--font-mono);
+    overflow: hidden;
+}
+
+.recovery-panel::before {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+}
+
+.recovery-kicker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(142, 193, 221, 0.94);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.recovery-title {
+    font-size: clamp(28px, 4vw, 46px);
+    line-height: 0.95;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #f1f6fa;
+    margin-bottom: 26px;
+    text-shadow: 0 0 18px rgba(142, 193, 221, 0.08);
+}
+
+#recovery-output {
+    min-height: 220px;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    color: rgba(203, 224, 236, 0.82);
+    margin-bottom: 24px;
+}
+
+.recovery-progress {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid rgba(142, 193, 221, 0.18);
+    background: rgba(255, 255, 255, 0.04);
+    margin-bottom: 16px;
+}
+
+#recovery-progress-bar {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #8ec1dd 0%, #d3a35d 100%);
+    box-shadow: 0 0 24px rgba(142, 193, 221, 0.2);
+    transition: width 0.2s ease;
+}
+
+#recovery-status {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: rgba(211, 163, 93, 0.92);
+    text-transform: uppercase;
+}
+
 #hack-screen {
     position: fixed;
     top: 0;
@@ -148,7 +273,14 @@ button[type="submit"]:hover {
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    opacity: 0;
+    pointer-events: none;
     transition: opacity 1s ease-out;
+}
+
+#hack-screen.is-ready {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 #hack-output {
@@ -177,6 +309,312 @@ button[type="submit"]:hover {
     font-size: 15px;
     flex-grow: 1;
     outline: none;
+}
+
+#challenge-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 10040;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+        radial-gradient(circle at 18% 16%, rgba(78, 154, 92, 0.08), transparent 18%),
+        radial-gradient(circle at 82% 18%, rgba(211, 163, 93, 0.06), transparent 16%),
+        linear-gradient(180deg, rgba(3, 7, 4, 0.99) 0%, rgba(6, 12, 8, 1) 100%);
+}
+
+#challenge-overlay[hidden] {
+    display: none !important;
+}
+
+.challenge-shell {
+    position: relative;
+    width: min(1040px, 100%);
+    max-height: calc(100vh - 48px);
+    overflow: auto;
+    border: 1px solid rgba(137, 198, 144, 0.28);
+    background: linear-gradient(180deg, rgba(5, 11, 6, 0.96) 0%, rgba(8, 18, 10, 0.96) 100%);
+    box-shadow: 0 28px 80px rgba(0, 0, 0, 0.44);
+    color: #ddf7dc;
+    font-family: 'Consolas', monospace;
+}
+
+.challenge-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.03) 0,
+        rgba(255, 255, 255, 0.03) 1px,
+        transparent 1px,
+        transparent 5px
+    );
+    opacity: 0.2;
+}
+
+.challenge-frame {
+    position: relative;
+    z-index: 1;
+    padding: 24px 26px 28px;
+}
+
+.challenge-kicker {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: rgba(139, 220, 147, 0.88);
+    margin-bottom: 10px;
+}
+
+.challenge-title {
+    font-size: clamp(22px, 3vw, 34px);
+    line-height: 1;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #f1fff1;
+    margin-bottom: 12px;
+}
+
+.challenge-copy {
+    color: rgba(221, 247, 220, 0.72);
+    line-height: 1.65;
+    margin-bottom: 22px;
+}
+
+.challenge-status {
+    min-height: 24px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    color: rgba(211, 163, 93, 0.92);
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.challenge-status.is-error {
+    color: #ff8f8f;
+}
+
+.sync-shell {
+    padding: 24px;
+    border: 1px solid rgba(137, 198, 144, 0.16);
+    background:
+        radial-gradient(circle at top, rgba(137, 198, 144, 0.07), transparent 24%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.02) 100%);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.sync-progress {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.sync-pip {
+    flex: 1;
+    height: 10px;
+    border-radius: 999px;
+    border: 1px solid rgba(137, 198, 144, 0.16);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.sync-pip.is-complete {
+    border-color: rgba(211, 163, 93, 0.52);
+    background: linear-gradient(90deg, rgba(137, 198, 144, 0.92) 0%, rgba(211, 163, 93, 0.92) 100%);
+    box-shadow: 0 0 18px rgba(211, 163, 93, 0.14);
+}
+
+.sync-track {
+    position: relative;
+    height: 56px;
+    border: 1px solid rgba(137, 198, 144, 0.16);
+    background:
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.04) 0,
+            rgba(255, 255, 255, 0.04) 1px,
+            transparent 1px,
+            transparent 40px
+        ),
+        linear-gradient(180deg, rgba(7, 13, 8, 0.96) 0%, rgba(5, 9, 6, 0.98) 100%);
+    overflow: hidden;
+}
+
+.sync-zone {
+    position: absolute;
+    top: 7px;
+    bottom: 7px;
+    min-width: 42px;
+    border: 1px solid rgba(211, 163, 93, 0.48);
+    background:
+        linear-gradient(180deg, rgba(211, 163, 93, 0.24) 0%, rgba(211, 163, 93, 0.1) 100%);
+    box-shadow:
+        0 0 18px rgba(211, 163, 93, 0.14),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.sync-marker {
+    position: absolute;
+    top: 4px;
+    width: 20px;
+    height: 48px;
+    border: 1px solid rgba(137, 198, 144, 0.36);
+    background:
+        linear-gradient(180deg, rgba(214, 255, 217, 0.94) 0%, rgba(137, 198, 144, 0.9) 100%);
+    box-shadow:
+        0 0 22px rgba(137, 198, 144, 0.22),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.sync-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 14px;
+    font-size: 11px;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: rgba(221, 247, 220, 0.54);
+}
+
+.sync-hint {
+    margin-top: 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: rgba(221, 247, 220, 0.72);
+    text-align: center;
+}
+
+.captcha-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.challenge-btn {
+    min-width: 170px;
+    padding: 12px 16px;
+    border: 1px solid rgba(137, 198, 144, 0.24);
+    background: rgba(255, 255, 255, 0.05);
+    color: #e8f8e7;
+    font-family: 'Consolas', monospace;
+    font-size: 12px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.challenge-btn:hover {
+    border-color: rgba(211, 163, 93, 0.4);
+    background: rgba(211, 163, 93, 0.08);
+}
+
+.popup-cleanup-shell {
+    position: relative;
+    width: min(1160px, 100%);
+    height: min(760px, calc(100vh - 48px));
+    overflow: hidden;
+}
+
+.popup-cleanup-header {
+    position: absolute;
+    top: 18px;
+    left: 20px;
+    right: 20px;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(5, 9, 13, 0.82);
+    color: #edf4ef;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.popup-cleanup-header strong {
+    color: #ff8c8c;
+}
+
+.popup-cleanup-stage {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 18% 20%, rgba(255, 82, 82, 0.08), transparent 16%),
+        radial-gradient(circle at 78% 24%, rgba(118, 255, 113, 0.08), transparent 18%),
+        linear-gradient(180deg, rgba(19, 22, 24, 0.96) 0%, rgba(8, 10, 12, 0.98) 100%);
+}
+
+.malware-popup {
+    position: absolute;
+    width: 210px;
+    min-height: 132px;
+    border: 1px solid rgba(184, 57, 57, 0.4);
+    background: linear-gradient(180deg, rgba(254, 243, 214, 0.98) 0%, rgba(244, 219, 176, 0.98) 100%);
+    color: #4d3017;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, 0.34);
+    overflow: hidden;
+}
+
+.malware-popup-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    background: linear-gradient(180deg, #d34c4c 0%, #942626 100%);
+    color: #fff4f4;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.malware-popup-close {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    background: rgba(255, 255, 255, 0.14);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.malware-popup-body {
+    padding: 12px 12px 14px;
+}
+
+.malware-popup-title {
+    font-size: 15px;
+    line-height: 1.15;
+    color: #6b1d1d;
+    margin-bottom: 8px;
+}
+
+.malware-popup-copy {
+    font-size: 11px;
+    line-height: 1.45;
+    color: rgba(77, 48, 23, 0.86);
+}
+
+.malware-popup-badge {
+    margin-top: 10px;
+    display: inline-block;
+    padding: 4px 8px;
+    border: 1px solid rgba(152, 113, 43, 0.24);
+    background: rgba(255, 255, 255, 0.42);
+    color: #7a511b;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 #boot-screen {
@@ -230,6 +668,15 @@ button[type="submit"]:hover {
 }
 
 @media (max-width: 520px) {
+    .sync-meta {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .captcha-actions {
+        flex-direction: column;
+    }
+
     .login-header::after {
         position: static;
         display: block;

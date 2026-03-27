@@ -241,7 +241,7 @@ function renderDeskIndicator(profile) {
     const indicator = document.getElementById('desk-rec-indicator');
     if (!indicator) return;
 
-    indicator.hidden = !(profile.theme === 'madison');
+    indicator.hidden = true;
 }
 
 function renderEmilyCodefield(isVisible) {
