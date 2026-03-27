@@ -158,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         container.tabIndex = -1;
         const listPane = container.querySelector('.list-pane');
         const detailPane = container.querySelector('.detail-pane');
+        const splitView = container.querySelector('.split-view');
         const presentation = prepareSplitViewItems(dataArray, { appId, titleKey, metaKey, isMessage });
         const useMechanicalReveal = currentUser === 'n.bennett' && appId === 'explorer';
         const revealTimers = [];
@@ -226,6 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 
                 if (item.type === "slideshow") {
                     expandWindowForSlideshow(container);
+                    splitView?.classList.add('is-slideshow-focus');
                     let currentSlide = 0;
 
                     const moveSlide = (direction) => {
@@ -315,6 +317,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     container.focus();
                 } else {
                     detailPane.classList.remove('is-slideshow');
+                    splitView?.classList.remove('is-slideshow-focus');
                     slideshowController = null;
 
                     const textToDisplay = item[contentKey];
@@ -573,6 +576,14 @@ document.addEventListener("DOMContentLoaded", () => {
             screen: null,
             timers: []
         };
+        const typingState = {
+            timer: null,
+            node: null,
+            fullText: '',
+            index: 0,
+            isActive: false,
+            lastSoundAt: 0
+        };
 
         humanGrid.innerHTML = gridLabels.map((label, index) => `
             <button type="button" class="human-node" data-node-index="${index}" disabled>
@@ -599,6 +610,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 clearTruthGateTimers();
                 clearGhostState(true);
                 clearPrankSequence();
+                clearTypingState();
                 if (previousCleanup) previousCleanup();
             };
         }
@@ -626,6 +638,108 @@ document.addEventListener("DOMContentLoaded", () => {
         function appendCommand(command) {
             if (!command) return;
             appendOutput(`> ${command}`, { variant: 'command' });
+        }
+
+        function appendArchive(text) {
+            const node = document.createElement('div');
+            node.className = 'terminal-archive';
+            node.textContent = String(text || '');
+            outputDiv.appendChild(node);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+            return node;
+        }
+
+        function setTerminalBusy(isBusy) {
+            container.classList.toggle('is-terminal-busy', isBusy);
+            inputField.readOnly = isBusy;
+            inputField.placeholder = isBusy ? "Transcription en cours..." : "Entrer une commande";
+        }
+
+        function clearTypingState() {
+            if (typingState.timer) {
+                window.clearTimeout(typingState.timer);
+                typingState.timer = null;
+            }
+
+            if (typingState.node) {
+                typingState.node.classList.remove('is-typing');
+            }
+
+            typingState.node = null;
+            typingState.fullText = '';
+            typingState.index = 0;
+            typingState.isActive = false;
+            typingState.lastSoundAt = 0;
+            setTerminalBusy(false);
+        }
+
+        function playTypingTick(chunk) {
+            if (!/\S/.test(chunk)) return;
+
+            const now = performance.now();
+            if (now - typingState.lastSoundAt < 82) return;
+            typingState.lastSoundAt = now;
+
+            playUiSelect({
+                volume: currentUser === 'e.carter' ? 0.03 : 0.022,
+                playbackRate: currentUser === 'e.carter' ? 1.22 : 1.34
+            });
+        }
+
+        function appendArchiveTyped(text, onComplete = null) {
+            clearTypingState();
+
+            const node = document.createElement('div');
+            node.className = 'terminal-archive is-typing';
+            node.textContent = '';
+            outputDiv.appendChild(node);
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+
+            typingState.node = node;
+            typingState.fullText = String(text || '');
+            typingState.index = 0;
+            typingState.isActive = true;
+            typingState.lastSoundAt = 0;
+            setTerminalBusy(true);
+
+            const step = () => {
+                if (!typingState.isActive || typingState.node !== node) return;
+
+                if (typingState.index >= typingState.fullText.length) {
+                    node.classList.remove('is-typing');
+                    typingState.timer = null;
+                    typingState.node = null;
+                    typingState.fullText = '';
+                    typingState.index = 0;
+                    typingState.isActive = false;
+                    typingState.lastSoundAt = 0;
+                    setTerminalBusy(false);
+                    outputDiv.scrollTop = outputDiv.scrollHeight;
+                    if (typeof onComplete === 'function') onComplete();
+                    return;
+                }
+
+                const currentChar = typingState.fullText[typingState.index];
+                const chunkSize = 1;
+                const nextIndex = Math.min(typingState.index + chunkSize, typingState.fullText.length);
+                const chunk = typingState.fullText.slice(typingState.index, nextIndex);
+                typingState.index = nextIndex;
+                node.textContent += chunk;
+                outputDiv.scrollTop = outputDiv.scrollHeight;
+                playTypingTick(chunk);
+
+                const lastChar = chunk[chunk.length - 1];
+                let delay = 36;
+                if (lastChar === '\n') delay = 220;
+                else if (/[.!?]/.test(lastChar)) delay = 126;
+                else if (/[,:;]/.test(lastChar)) delay = 82;
+                else if (/\s/.test(lastChar)) delay = 52;
+
+                typingState.timer = window.setTimeout(step, delay);
+            };
+
+            typingState.timer = window.setTimeout(step, 260);
+            return node;
         }
 
         function clearTruthGateTimers() {
@@ -761,6 +875,16 @@ document.addEventListener("DOMContentLoaded", () => {
             return sequence;
         }
 
+        function expandWindowForTruthArchive() {
+            const area = document.getElementById('window-area');
+            if (!area) return;
+
+            setWindowMinimumSize(container, 1120, 760);
+            const targetWidth = Math.min(Math.max(Math.floor(area.clientWidth * 0.982), 1120), area.clientWidth - 8);
+            const targetHeight = Math.min(Math.max(Math.floor(area.clientHeight * 0.965), 760), area.clientHeight - 8);
+            resizeWindow(container, targetWidth, targetHeight);
+        }
+
         function revealTruthArchive() {
             truthGateState.unlocked = true;
             truthGateState.isPlaying = false;
@@ -774,14 +898,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 volume: 0.24,
                 playbackRate: 0.88
             });
-            setWindowMinimumSize(container, 980, 720);
-            resizeWindow(container, 1020, 760);
+            expandWindowForTruthArchive();
 
             const revealTimer = window.setTimeout(() => {
                 humanGate.hidden = true;
-                appendOutput(userData.terminal.truth || "Archive introuvable.");
-                inputField.focus();
-                scheduleGhostTyping();
+                appendArchiveTyped(userData.terminal.truth || "Archive introuvable.", () => {
+                    inputField.focus();
+                    scheduleGhostTyping();
+                });
             }, 520);
             truthGateState.timers.push(revealTimer);
         }
@@ -847,8 +971,11 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             if (truthGateState.unlocked) {
-                resizeWindow(container, 940, 660);
-                appendOutput(userData.terminal.truth);
+                expandWindowForTruthArchive();
+                appendArchiveTyped(userData.terminal.truth, () => {
+                    inputField.focus();
+                    scheduleGhostTyping();
+                });
                 return;
             }
 
@@ -859,8 +986,7 @@ document.addEventListener("DOMContentLoaded", () => {
             humanGate.classList.remove('is-failed', 'is-success');
             gateStatus.textContent = "Initialisation du protocole humain...";
             replayButton.disabled = false;
-            setWindowMinimumSize(container, 980, 720);
-            resizeWindow(container, 1020, 760);
+            expandWindowForTruthArchive();
 
             if (isReplay) appendOutput("[PROTOCOLE H-9] Sequence reinitialisee.");
             else appendOutput("[VERROU IA] Archive truth detectee. Validation humaine analogique requise.");
@@ -1323,6 +1449,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         inputField.addEventListener('keydown', (e) => {
+            if (typingState.isActive) return;
             if (e.key === 'Enter') {
                 const command = inputField.value.trim().toLowerCase();
                 inputField.value = "";
@@ -1348,7 +1475,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (!suppressEcho) appendCommand(command);
 
-                if (command === "help") response = "Commandes disponibles : list, open [fichier], status, users, logs";
+                if (command === "help") {
+                    const commands = ["list", "open [fichier]", "status", "users", "logs"];
+                    if (userData.terminal.truth) commands.push("truth");
+                    response = `Commandes disponibles : ${commands.join(", ")}`;
+                }
                 else if (command === "status") response = userData.terminal.status || "Statut non disponible.";
                 else if (command === "logs") response = userData.terminal.logs || "Aucune alerte critique.";
                 else if (command === "users") response = userData.terminal.users || "Accès restreint.";
@@ -1394,9 +1525,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const area = document.getElementById('window-area');
         if (!area) return;
 
-        setWindowMinimumSize(container, 980, 700);
-        const targetWidth = Math.min(Math.max(Math.floor(area.clientWidth * 0.92), 960), area.clientWidth - 24);
-        const targetHeight = Math.min(Math.max(Math.floor(area.clientHeight * 0.9), 680), area.clientHeight - 24);
+        setWindowMinimumSize(container, 1180, 780);
+        const targetWidth = Math.min(Math.max(Math.floor(area.clientWidth * 0.975), 1180), area.clientWidth - 12);
+        const targetHeight = Math.min(Math.max(Math.floor(area.clientHeight * 0.955), 780), area.clientHeight - 12);
         resizeWindow(container, targetWidth, targetHeight);
     }
 
@@ -1470,11 +1601,12 @@ document.addEventListener("DOMContentLoaded", () => {
         const currentTop = parseInt(win.style.top, 10) || 12;
         const centerX = currentLeft + (win.offsetWidth / 2);
         const centerY = currentTop + (win.offsetHeight / 2);
-        const maxLeft = Math.max(area.clientWidth - clampedWidth - 12, 12);
-        const maxTop = Math.max(area.clientHeight - clampedHeight - 12, 12);
+        const margin = win.dataset.app === 'explorer' && container.querySelector('.detail-pane')?.classList.contains('is-slideshow') ? 6 : 12;
+        const maxLeft = Math.max(area.clientWidth - clampedWidth - margin, margin);
+        const maxTop = Math.max(area.clientHeight - clampedHeight - margin, margin);
 
-        const nextLeft = Math.min(Math.max(Math.round(centerX - (clampedWidth / 2)), 12), maxLeft);
-        const nextTop = Math.min(Math.max(Math.round(centerY - (clampedHeight / 2)), 12), maxTop);
+        const nextLeft = Math.min(Math.max(Math.round(centerX - (clampedWidth / 2)), margin), maxLeft);
+        const nextTop = Math.min(Math.max(Math.round(centerY - (clampedHeight / 2)), margin), maxTop);
 
         win.style.width = clampedWidth + 'px';
         win.style.height = clampedHeight + 'px';
