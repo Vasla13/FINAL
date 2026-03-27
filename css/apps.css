@@ -1114,13 +1114,46 @@ body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
     flex: 1;
     min-height: 150px;
     overflow-y: auto;
-    white-space: pre-wrap;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
     padding: 14px 16px;
     border-radius: 14px;
     border: 1px solid rgba(142, 193, 221, 0.16);
     background: rgba(0, 0, 0, 0.2);
     line-height: 1.75;
     text-shadow: 0 0 12px rgba(142, 193, 221, 0.1);
+}
+
+.terminal-output.is-self-typing {
+    border-color: rgba(255, 79, 79, 0.26);
+    box-shadow: inset 0 0 0 1px rgba(255, 79, 79, 0.08);
+}
+
+.terminal-line {
+    min-height: 1.45em;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.terminal-line--command {
+    color: rgba(211, 163, 93, 0.96);
+}
+
+.terminal-line--error {
+    color: #ff8e8e;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 16px rgba(255, 79, 79, 0.22);
+}
+
+.terminal-line--ghost {
+    color: rgba(255, 104, 104, 0.96);
+    letter-spacing: 1.4px;
+    text-shadow:
+        -1px 0 rgba(255, 58, 58, 0.24),
+        1px 0 rgba(74, 255, 255, 0.18);
+    animation: terminalGhostPulse 0.72s steps(2, end) infinite;
 }
 
 .terminal-input-line {
@@ -1375,6 +1408,18 @@ body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
     transform: translateY(-1px);
 }
 
+body[data-profile="n.bennett"] .terminal-line--error {
+    padding: 4px 8px;
+    border-left: 2px solid rgba(194, 48, 48, 0.9);
+    background: rgba(194, 48, 48, 0.08);
+    color: #b22b2b;
+    text-shadow: none;
+}
+
+body[data-profile="e.carter"] .terminal-line--ghost {
+    color: rgba(255, 123, 123, 0.98);
+}
+
 @keyframes terminalGateShake {
     0%,
     100% {
@@ -1391,6 +1436,18 @@ body[data-profile="n.bennett"] .list-pane.is-strict-profile .list-item.active {
     }
     80% {
         transform: translateX(3px);
+    }
+}
+
+@keyframes terminalGhostPulse {
+    0%,
+    100% {
+        opacity: 0.92;
+        transform: translateX(0);
+    }
+    50% {
+        opacity: 0.68;
+        transform: translateX(1px);
     }
 }
 

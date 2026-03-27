@@ -425,6 +425,115 @@ body.is-regis-glitch[data-profile="e.carter"] #current-user-display {
         1px 0 rgba(74, 255, 255, 0.38);
 }
 
+#system-notification-stack {
+    position: absolute;
+    right: 18px;
+    bottom: 18px;
+    width: min(320px, 34vw);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1260;
+    pointer-events: none;
+}
+
+.system-notification {
+    position: relative;
+    padding: 12px 42px 14px 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(129, 113, 84, 0.28);
+    background: linear-gradient(180deg, rgba(239, 230, 212, 0.98) 0%, rgba(223, 212, 193, 0.98) 100%);
+    color: #463524;
+    box-shadow: 0 16px 30px rgba(67, 52, 31, 0.18);
+    pointer-events: auto;
+    animation: notificationIn 0.24s ease;
+}
+
+.system-notification-kicker {
+    font-size: 10px;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    color: rgba(102, 77, 39, 0.72);
+    margin-bottom: 8px;
+}
+
+.system-notification-copy {
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.system-notification-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border-radius: 8px;
+    border: 1px solid rgba(129, 113, 84, 0.26);
+    background: rgba(255, 255, 255, 0.44);
+    color: #5c4323;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+#cursor-trail-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 1240;
+    pointer-events: none;
+}
+
+.cursor-trail-node {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(214, 190, 131, 0.34);
+    background: rgba(255, 240, 205, 0.14);
+    box-shadow: 0 0 10px rgba(255, 221, 142, 0.1);
+    opacity: var(--trail-opacity, 0.3);
+    transform: translate(-24px, -24px) scale(1);
+}
+
+#madison-tooltip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: min(320px, calc(100vw - 24px));
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(160, 184, 165, 0.26);
+    background: linear-gradient(180deg, rgba(18, 28, 23, 0.98) 0%, rgba(10, 15, 13, 0.98) 100%);
+    color: rgba(223, 232, 225, 0.9);
+    font-size: 12px;
+    line-height: 1.5;
+    letter-spacing: 0.4px;
+    box-shadow: 0 20px 34px rgba(0, 0, 0, 0.3);
+    transform: translate(-50%, calc(-100% - 12px));
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1300;
+    transition: opacity 0.16s ease;
+}
+
+#madison-tooltip.is-visible {
+    opacity: 1;
+}
+
+#emily-dread-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 980;
+    pointer-events: none;
+    opacity: 0;
+    background:
+        radial-gradient(circle at center, transparent 18%, rgba(0, 0, 0, 0.36) 72%, rgba(0, 0, 0, 0.76) 100%),
+        linear-gradient(180deg, rgba(11, 0, 0, 0.16) 0%, rgba(0, 0, 0, 0.92) 100%);
+}
+
 body[data-profile="n.bennett"] #os-container {
     background: linear-gradient(180deg, #fbfdff 0%, #eef3f7 100%);
 }
@@ -489,6 +598,8 @@ body[data-profile="m.brooks"] #window-area::before {
         radial-gradient(circle at 50% 50%, rgba(7, 10, 9, 0.52), transparent 48%);
     filter: blur(15px);
     opacity: 0.6;
+    transform: translate(var(--madison-parallax-x, 0px), var(--madison-parallax-y, 0px));
+    transition: transform 0.18s ease-out;
 }
 
 body[data-profile="m.brooks"] #window-area::after {
@@ -620,6 +731,17 @@ body[data-profile="e.carter"] #window-area::before {
 body.is-app-loading,
 body.is-app-loading * {
     cursor: wait !important;
+}
+
+@keyframes notificationIn {
+    0% {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @keyframes appPendingPulse {

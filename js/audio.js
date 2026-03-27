@@ -6,6 +6,7 @@ window.registreAudio = (() => {
         uiOpenClean: 'assets/audio/ui_open_clean.wav',
         uiOpenRegis: 'assets/audio/ui_open_regis.wav',
         uiSelect: 'assets/audio/ui_select.wav',
+        uiSelectRegis: 'assets/audio/ui_select_regis.wav',
         authSuccess: 'assets/audio/auth_success.wav',
         authError: 'assets/audio/auth_error.wav',
         emilyIdle: 'assets/audio/emily_idle_modem.wav'

@@ -45,6 +45,19 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.toggle('is-app-loading', pendingLaunches.size > 0);
     }
 
+    function playUiSelect(options = {}) {
+        const selectSound = profileConfig.selectSound || {
+            name: 'uiSelect',
+            volume: 0.1,
+            playbackRate: 0.92
+        };
+
+        window.registreAudio?.play(selectSound.name, {
+            volume: typeof options.volume === 'number' ? options.volume : selectSound.volume,
+            playbackRate: typeof options.playbackRate === 'number' ? options.playbackRate : selectSound.playbackRate
+        });
+    }
+
     sidebar?.addEventListener('click', (event) => {
         const button = event.target.closest('.app-link');
         if (!button) return;
@@ -205,7 +218,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 detailPane.scrollTop = 0;
 
                 if (playSound) {
-                    window.registreAudio?.play('uiSelect', {
+                    playUiSelect({
                         volume: 0.08,
                         playbackRate: 0.96 + (Math.random() * 0.08)
                     });
@@ -224,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
                             });
                         } else {
                             currentSlide = (currentSlide > 0) ? currentSlide - 1 : item.slides.length - 1;
-                            window.registreAudio?.play('uiSelect', {
+                            playUiSelect({
                                 volume: 0.12,
                                 playbackRate: 0.8
                             });
@@ -516,16 +529,14 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderTerminal(container, userData) {
+        const win = container.closest('.os-window');
         container.classList.add('terminal-window');
         container.innerHTML = `
             <div class="terminal-chrome">
                 <span>PROJET REGISTRE - OS v4.02</span>
                 <span>SESSION ${currentUser.toUpperCase()}</span>
             </div>
-            <div class="terminal-output">PROJET REGISTRE - OS v4.02
-Droit d'accès : ADMINISTRATIF.
-Tapez 'help' pour la liste des commandes.
-</div>
+            <div class="terminal-output"></div>
             <div class="terminal-human-gate" hidden>
                 <div class="terminal-gate-header">
                     <div>
@@ -563,6 +574,17 @@ Tapez 'help' pour la liste des commandes.
             buttons: [],
             timers: []
         };
+        const ghostState = {
+            idleTimer: null,
+            timers: [],
+            nodes: [],
+            isActive: false
+        };
+        const prankState = {
+            active: false,
+            screen: null,
+            timers: []
+        };
 
         humanGrid.innerHTML = gridLabels.map((label, index) => `
             <button type="button" class="human-node" data-node-index="${index}" disabled>
@@ -583,14 +605,118 @@ Tapez 'help' pour la liste des commandes.
             handleTruthGateInput(Number(button.dataset.nodeIndex));
         });
 
-        function appendOutput(text) {
-            outputDiv.textContent += `${text}\n`;
+        const previousCleanup = typeof win?._cleanup === 'function' ? win._cleanup : null;
+        if (win) {
+            win._cleanup = () => {
+                clearTruthGateTimers();
+                clearGhostState(true);
+                clearPrankSequence();
+                if (previousCleanup) previousCleanup();
+            };
+        }
+
+        appendOutput("PROJET REGISTRE - OS v4.02");
+        appendOutput("Droit d'accès : ADMINISTRATIF.");
+        appendOutput("Tapez 'help' pour la liste des commandes.");
+        scheduleGhostTyping();
+
+        function appendOutput(text, options = {}) {
+            const lines = String(text).split('\n');
+            const createdNodes = lines.map((line) => {
+                const node = document.createElement('div');
+                node.className = 'terminal-line';
+                if (options.variant) node.classList.add(`terminal-line--${options.variant}`);
+                if (options.ghost) node.dataset.ghost = 'true';
+                node.textContent = line || ' ';
+                outputDiv.appendChild(node);
+                return node;
+            });
             outputDiv.scrollTop = outputDiv.scrollHeight;
+            return createdNodes;
+        }
+
+        function appendCommand(command) {
+            if (!command) return;
+            appendOutput(`> ${command}`, { variant: 'command' });
         }
 
         function clearTruthGateTimers() {
             truthGateState.timers.forEach((timerId) => window.clearTimeout(timerId));
             truthGateState.timers = [];
+        }
+
+        function clearGhostTimers() {
+            ghostState.timers.forEach((timerId) => window.clearTimeout(timerId));
+            ghostState.timers = [];
+        }
+
+        function clearPrankSequence() {
+            prankState.timers.forEach((timerId) => window.clearTimeout(timerId));
+            prankState.timers = [];
+            prankState.active = false;
+            if (prankState.screen) {
+                prankState.screen.remove();
+                prankState.screen = null;
+            }
+        }
+
+        function removeGhostLines() {
+            ghostState.nodes.forEach((node) => node.remove());
+            ghostState.nodes = [];
+            ghostState.isActive = false;
+            outputDiv.classList.remove('is-self-typing');
+        }
+
+        function clearGhostState(removeLines = false) {
+            if (ghostState.idleTimer) {
+                window.clearTimeout(ghostState.idleTimer);
+                ghostState.idleTimer = null;
+            }
+
+            clearGhostTimers();
+            if (removeLines) removeGhostLines();
+        }
+
+        function scheduleGhostTyping() {
+            if (currentUser !== 'e.carter') return;
+            if (prankState.active) return;
+            if (!humanGate.hidden || truthGateState.isPlaying || inputField.value.trim()) return;
+
+            clearGhostState(false);
+            ghostState.idleTimer = window.setTimeout(() => {
+                startGhostTyping();
+            }, 10000);
+        }
+
+        function startGhostTyping() {
+            if (currentUser !== 'e.carter' || prankState.active || !humanGate.hidden || truthGateState.isPlaying || inputField.value.trim()) return;
+
+            removeGhostLines();
+            outputDiv.classList.add('is-self-typing');
+            ghostState.isActive = true;
+
+            const ghostLines = [
+                "> ANALYSE DE L'UTILISATEUR EN COURS...",
+                "> PROFIL DÉTECTÉ.",
+                "> VOUS N'ÊTES PAS EMILY CARTER."
+            ];
+
+            ghostLines.forEach((line, index) => {
+                const timerId = window.setTimeout(() => {
+                    const [node] = appendOutput(line, {
+                        variant: 'ghost',
+                        ghost: true
+                    });
+                    if (node) ghostState.nodes.push(node);
+                }, index * 620);
+                ghostState.timers.push(timerId);
+            });
+
+            const clearTimer = window.setTimeout(() => {
+                removeGhostLines();
+                scheduleGhostTyping();
+            }, (ghostLines.length * 620) + 850);
+            ghostState.timers.push(clearTimer);
         }
 
         function updateTruthGateTrack() {
@@ -664,6 +790,7 @@ Tapez 'help' pour la liste des commandes.
                 humanGate.hidden = true;
                 appendOutput(userData.terminal.truth || "Archive introuvable.");
                 inputField.focus();
+                scheduleGhostTyping();
             }, 520);
             truthGateState.timers.push(revealTimer);
         }
@@ -699,7 +826,7 @@ Tapez 'help' pour la liste des commandes.
                     const signal = button?.querySelector('.human-node-signal');
                     if (signal) signal.textContent = 'pulse';
                     flashTruthGateButton(nodeIndex, 'is-flash', 'pulse', 320);
-                    window.registreAudio?.play('uiSelect', {
+                    playUiSelect({
                         volume: 0.05,
                         playbackRate: 0.72 + (stepIndex * 0.03)
                     });
@@ -721,6 +848,8 @@ Tapez 'help' pour la liste des commandes.
         }
 
         function startTruthGate(isReplay = false) {
+            clearGhostState(true);
+
             if (!userData.terminal.truth) {
                 appendOutput("Commande non reconnue. Tentative consignee.");
                 return;
@@ -768,7 +897,7 @@ Tapez 'help' pour la liste des commandes.
             if (signal) signal.textContent = 'ok';
             truthGateState.progress += 1;
             updateTruthGateTrack();
-            window.registreAudio?.play('uiSelect', {
+            playUiSelect({
                 volume: 0.08,
                 playbackRate: 0.95 + (truthGateState.progress * 0.03)
             });
@@ -778,13 +907,130 @@ Tapez 'help' pour la liste des commandes.
             }
         }
 
+        function startPrankBomb() {
+            clearPrankSequence();
+            prankState.active = true;
+
+            const prankScreen = document.createElement('div');
+            prankScreen.id = "prank-screen";
+            document.body.appendChild(prankScreen);
+            prankState.screen = prankScreen;
+
+            prankScreen.style.position = "fixed";
+            prankScreen.style.top = "0";
+            prankScreen.style.left = "0";
+            prankScreen.style.width = "100vw";
+            prankScreen.style.height = "100vh";
+            prankScreen.style.backgroundColor = "#800000";
+            prankScreen.style.color = "#ff4d4d";
+            prankScreen.style.fontFamily = "monospace";
+            prankScreen.style.fontSize = "24px";
+            prankScreen.style.padding = "50px";
+            prankScreen.style.zIndex = "999999";
+            prankScreen.style.display = "flex";
+            prankScreen.style.flexDirection = "column";
+            prankScreen.style.justifyContent = "center";
+            prankScreen.style.alignItems = "center";
+            prankScreen.style.textAlign = "center";
+
+            const lines = [
+                "DÉTECTION D'INTRUSION...",
+                "UTILISATEUR NON RECONNU.",
+                "VIOLATION DU PROTOCOLE BNI DE NIVEAU 4.",
+                "LOCALISATION DU MATÉRIEL IDENTIFIÉE.",
+                "ARMEMENT DE LA CHARGE EXPLOSIVE DU DISQUE DUR...",
+                "DÉTONATION DANS : 5",
+                "4",
+                "3",
+                "2",
+                "1",
+                "...",
+                "🤡 ON VOUS A BIEN EU.",
+                "C'est nous. On a codé ça pendant la pause déj.",
+                "Si vous avez flippé, c'est que vous ne faites pas partie de l'équipe.",
+                "Fermeture du script de sécurité."
+            ];
+
+            let delay = 0;
+            prankScreen.innerHTML = "<div></div>";
+            const textContainer = prankScreen.querySelector('div');
+
+            lines.forEach((line, index) => {
+                delay += (index > 4 && index < 10) ? 1000 : 2000;
+
+                const timerId = window.setTimeout(() => {
+                    if (!prankState.screen) return;
+
+                    if (index >= 11) {
+                        prankScreen.style.backgroundColor = "#000";
+                        prankScreen.style.color = "#0f0";
+                    }
+
+                    textContainer.innerHTML += `<p style="margin: 10px 0;">${line}</p>`;
+
+                    if (index < 11) {
+                        const beep = new Audio('assets/audio/ui_select.wav');
+                        beep.volume = 0.8;
+                        beep.play().catch(() => {});
+                    } else if (index === 11) {
+                        const errorSnd = new Audio('assets/audio/auth_error.wav');
+                        errorSnd.play().catch(() => {});
+                    }
+                }, delay);
+
+                prankState.timers.push(timerId);
+            });
+
+            const endTimer = window.setTimeout(() => {
+                clearPrankSequence();
+                appendOutput("> Fichier exécuté. Fin du programme.");
+                inputField.focus();
+                scheduleGhostTyping();
+            }, delay + 5000);
+            prankState.timers.push(endTimer);
+        }
+
+        inputField.addEventListener('keydown', (event) => {
+            if (currentUser === 'e.carter' && event.key !== 'Tab') {
+                clearGhostState(true);
+            }
+        });
+
+        inputField.addEventListener('input', () => {
+            if (currentUser !== 'e.carter') return;
+            if (inputField.value.trim()) {
+                clearGhostState(true);
+            } else {
+                scheduleGhostTyping();
+            }
+        });
+
         inputField.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 const command = inputField.value.trim().toLowerCase();
                 inputField.value = "";
-                appendOutput(`\n> ${command}`);
+                clearGhostState(true);
+
+                if (command === "") {
+                    scheduleGhostTyping();
+                    return;
+                }
 
                 let response = "";
+                let responseVariant = "";
+                const isKnownCommand =
+                    command === "help" ||
+                    command === "status" ||
+                    command === "logs" ||
+                    command === "users" ||
+                    command === "list" ||
+                    command === "truth" ||
+                    command === "top_secret_do_not_run.exe" ||
+                    command.startsWith("open");
+                const suppressEcho = currentUser === 'n.bennett' && !isKnownCommand;
+
+                if (!suppressEcho) appendCommand(command);
+
                 if (command === "help") response = "Commandes disponibles : list, open [fichier], status, users, logs";
                 else if (command === "status") response = userData.terminal.status || "Statut non disponible.";
                 else if (command === "logs") response = userData.terminal.logs || "Aucune alerte critique.";
@@ -793,10 +1039,22 @@ Tapez 'help' pour la liste des commandes.
                 else if (command === "truth") {
                     startTruthGate();
                 }
+                else if (command === "top_secret_do_not_run.exe") {
+                    startPrankBomb();
+                    response = "Exécution en cours...";
+                }
                 else if (command.startsWith("open")) response = "Erreur : Ouverture via terminal restreinte. Utilisez l'Explorateur.";
-                else if (command !== "") response = "Commande non reconnue. Tentative consignée.";
+                else if (command !== "") {
+                    if (currentUser === 'n.bennett') {
+                        response = "[ERREUR DE SYNTAXE - CORRECTION EXIGÉE].";
+                        responseVariant = "error";
+                    } else {
+                        response = "Commande non reconnue. Tentative consignee.";
+                    }
+                }
 
-                if (response) appendOutput(response);
+                if (response) appendOutput(response, responseVariant ? { variant: responseVariant } : {});
+                scheduleGhostTyping();
             }
         });
     }

@@ -133,6 +133,52 @@ button[type="submit"]:hover {
     letter-spacing: 0.9px;
 }
 
+#hack-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #050505;
+    color: #0f0;
+    font-family: 'Consolas', monospace;
+    font-size: 15px;
+    padding: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    transition: opacity 1s ease-out;
+}
+
+#hack-output {
+    white-space: pre-wrap;
+    margin-bottom: 10px;
+    line-height: 1.5;
+    flex-grow: 1;
+    overflow-y: auto;
+}
+
+.hack-input-line {
+    display: flex;
+    align-items: center;
+}
+
+.hack-prompt {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+#hack-input {
+    background: transparent;
+    border: none;
+    color: #0f0;
+    font-family: 'Consolas', monospace;
+    font-size: 15px;
+    flex-grow: 1;
+    outline: none;
+}
+
 #boot-screen {
     position: fixed;
     top: 0;

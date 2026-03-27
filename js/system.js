@@ -24,7 +24,12 @@ const DESKTOP_PROFILES = {
             "OU EST PASSE\nLE BUDGET FIBRE ??",
             "RELANCER NOAH\nPOUR LES TASSES"
         ],
-        windowOpenDelayMs: 520
+        windowOpenDelayMs: 520,
+        notificationMessages: [
+            "Alerte : Depassement budget serveur R.E.G.I.S.",
+            "Rappel : Facture electricite Station 3 impayee.",
+            "Alerte Systeme : Espace disque C: insuffisant."
+        ]
     },
     "m.brooks": {
         theme: "madison",
@@ -46,12 +51,19 @@ const DESKTOP_PROFILES = {
             volume: 0.2,
             playbackRate: 0.92
         },
+        selectSound: {
+            name: "uiSelectRegis",
+            volume: 0.11,
+            playbackRate: 0.82
+        },
         hasRegisGlitch: true,
         idleAudio: {
             name: "emilyIdle",
             volume: 0.042,
             playbackRate: 0.96
-        }
+        },
+        dreadDurationMs: 180000,
+        dreadMaxOpacity: 0.5
     }
 };
 
@@ -67,7 +79,17 @@ const desktopRuntime = {
     idleAudio: null,
     activityHandler: null,
     activityEvents: [],
-    unloadBound: false
+    unloadBound: false,
+    notificationTimer: null,
+    cursorTrailRAF: null,
+    cursorTrailHandler: null,
+    cursorTrailNodes: [],
+    tooltipTimer: null,
+    tooltipHandlers: [],
+    activeTooltipTarget: null,
+    parallaxHandler: null,
+    dreadFrame: null,
+    dreadStartTime: 0
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -171,6 +193,34 @@ function ensureDesktopOverlays() {
         `;
         osContainer.appendChild(overlay);
     }
+
+    if (!document.getElementById('system-notification-stack')) {
+        const stack = document.createElement('div');
+        stack.id = 'system-notification-stack';
+        stack.hidden = true;
+        osContainer.appendChild(stack);
+    }
+
+    if (!document.getElementById('cursor-trail-layer')) {
+        const trailLayer = document.createElement('div');
+        trailLayer.id = 'cursor-trail-layer';
+        trailLayer.hidden = true;
+        osContainer.appendChild(trailLayer);
+    }
+
+    if (!document.getElementById('madison-tooltip')) {
+        const tooltip = document.createElement('div');
+        tooltip.id = 'madison-tooltip';
+        tooltip.hidden = true;
+        osContainer.appendChild(tooltip);
+    }
+
+    if (!document.getElementById('emily-dread-overlay')) {
+        const overlay = document.createElement('div');
+        overlay.id = 'emily-dread-overlay';
+        overlay.hidden = true;
+        osContainer.appendChild(overlay);
+    }
 }
 
 function renderDeskNote(noteText) {
@@ -219,10 +269,210 @@ function injectExclusiveModuleButton(profile) {
 function initializeProfileRuntime(userId) {
     cleanupDesktopRuntime();
 
+    if (userId === "o.reynolds") {
+        initializeOliviaNotifications();
+        initializeOliviaCursorTrail();
+    }
+
+    if (userId === "m.brooks") {
+        initializeMadisonTooltips();
+        initializeMadisonParallax();
+    }
+
     if (userId === "e.carter") {
         initializeEmilyGlitch();
         initializeEmilyIdleAudio();
+        initializeEmilyDread();
     }
+}
+
+function initializeOliviaNotifications() {
+    const profile = getCurrentDesktopProfile("o.reynolds");
+    const stack = document.getElementById('system-notification-stack');
+    if (!stack || !Array.isArray(profile.notificationMessages)) return;
+
+    stack.hidden = false;
+
+    const queueNotification = () => {
+        desktopRuntime.notificationTimer = window.setTimeout(() => {
+            if (currentUser !== "o.reynolds") return;
+            spawnOliviaNotification(profile.notificationMessages);
+            queueNotification();
+        }, 30000 + Math.floor(Math.random() * 10000));
+    };
+
+    queueNotification();
+}
+
+function spawnOliviaNotification(messages) {
+    const stack = document.getElementById('system-notification-stack');
+    if (!stack || !messages.length) return;
+
+    const message = messages[Math.floor(Math.random() * messages.length)];
+    const item = document.createElement('section');
+    item.className = 'system-notification';
+    item.innerHTML = `
+        <div class="system-notification-kicker">BNI INTERNAL ALERT</div>
+        <div class="system-notification-copy">${message}</div>
+        <button type="button" class="system-notification-close" aria-label="Fermer notification">X</button>
+    `;
+
+    item.querySelector('.system-notification-close')?.addEventListener('click', () => {
+        item.remove();
+    });
+
+    stack.appendChild(item);
+}
+
+function initializeOliviaCursorTrail() {
+    const trailLayer = document.getElementById('cursor-trail-layer');
+    if (!trailLayer) return;
+
+    trailLayer.hidden = false;
+    trailLayer.innerHTML = "";
+
+    const trailPoints = Array.from({ length: 5 }, () => ({ x: -24, y: -24 }));
+    desktopRuntime.cursorTrailNodes = trailPoints.map((_, index) => {
+        const node = document.createElement('span');
+        node.className = 'cursor-trail-node';
+        node.style.setProperty('--trail-scale', (1 - (index * 0.12)).toFixed(2));
+        node.style.setProperty('--trail-opacity', (0.34 - (index * 0.05)).toFixed(2));
+        trailLayer.appendChild(node);
+        return node;
+    });
+
+    let targetX = -24;
+    let targetY = -24;
+    let hasPointer = false;
+
+    const onPointerMove = (event) => {
+        targetX = event.clientX;
+        targetY = event.clientY;
+        hasPointer = true;
+    };
+
+    const renderTrail = () => {
+        if (hasPointer) {
+            trailPoints.forEach((point, index) => {
+                const anchor = index === 0 ? { x: targetX, y: targetY } : trailPoints[index - 1];
+                const ease = 0.26 - (index * 0.03);
+                point.x += (anchor.x - point.x) * Math.max(ease, 0.08);
+                point.y += (anchor.y - point.y) * Math.max(ease, 0.08);
+
+                const node = desktopRuntime.cursorTrailNodes[index];
+                if (node) {
+                    node.style.transform = `translate(${(point.x - 7).toFixed(1)}px, ${(point.y - 7).toFixed(1)}px) scale(var(--trail-scale))`;
+                }
+            });
+        }
+
+        desktopRuntime.cursorTrailRAF = window.requestAnimationFrame(renderTrail);
+    };
+
+    desktopRuntime.cursorTrailHandler = onPointerMove;
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    renderTrail();
+}
+
+function initializeMadisonTooltips() {
+    const tooltip = document.getElementById('madison-tooltip');
+    if (!tooltip) return;
+
+    const showTooltip = (target) => {
+        const message = getMadisonTooltipMessage(target);
+        if (!message) return;
+
+        const rect = target.getBoundingClientRect();
+        const horizontalCenter = rect.left + (rect.width / 2);
+
+        tooltip.textContent = message;
+        tooltip.style.left = `${Math.min(Math.max(horizontalCenter, 30), window.innerWidth - 30)}px`;
+        tooltip.style.top = `${Math.max(rect.top, 24)}px`;
+        tooltip.hidden = false;
+        tooltip.classList.add('is-visible');
+        desktopRuntime.activeTooltipTarget = target;
+    };
+
+    const hideTooltip = () => {
+        if (desktopRuntime.tooltipTimer) {
+            window.clearTimeout(desktopRuntime.tooltipTimer);
+            desktopRuntime.tooltipTimer = null;
+        }
+        desktopRuntime.activeTooltipTarget = null;
+        tooltip.classList.remove('is-visible');
+        tooltip.hidden = true;
+    };
+
+    const scheduleTooltip = (target) => {
+        hideTooltip();
+        desktopRuntime.tooltipTimer = window.setTimeout(() => {
+            desktopRuntime.tooltipTimer = null;
+            showTooltip(target);
+        }, 620);
+    };
+
+    const onPointerOver = (event) => {
+        const target = event.target.closest('button, .app-link');
+        if (!target || target.closest('#system-notification-stack')) return;
+        scheduleTooltip(target);
+    };
+
+    const onPointerOut = (event) => {
+        const target = event.target.closest('button, .app-link');
+        if (!target) return;
+        if (event.relatedTarget && target.contains(event.relatedTarget)) return;
+        if (desktopRuntime.activeTooltipTarget === target || desktopRuntime.tooltipTimer) {
+            hideTooltip();
+        }
+    };
+
+    const onPointerDown = () => hideTooltip();
+
+    document.addEventListener('pointerover', onPointerOver);
+    document.addEventListener('pointerout', onPointerOut);
+    document.addEventListener('pointerdown', onPointerDown);
+
+    desktopRuntime.tooltipHandlers = [
+        ['pointerover', onPointerOver],
+        ['pointerout', onPointerOut],
+        ['pointerdown', onPointerDown]
+    ];
+}
+
+function getMadisonTooltipMessage(target) {
+    if (!target) return "";
+    if (target.matches('.window-close')) return "[Action détectée : Comportement d'évitement / Fuite]";
+    if (target.matches('#logout-btn')) return "[Action détectée : Désengagement / Rupture de session]";
+
+    const appId = target.dataset.app;
+    if (appId === 'explorer') return "[Action détectée : Curiosité exploratoire active]";
+    if (appId === 'messages') return "[Action détectée : Recherche de validation interpersonnelle]";
+    if (appId === 'logs') return "[Action détectée : Compulsion de traçabilité]";
+    if (appId === 'synthesis') return "[Action détectée : Besoin de narration cohérente]";
+    if (appId === 'terminal') return "[Action détectée : Contrôle direct / Contournement méthodique]";
+    if (appId === 'camera') return "[Action détectée : Fixation sur la surveillance passive]";
+
+    if (target.matches('.slide-btn[data-regis-nav="next"]')) return "[Action détectée : Projection vers la cible suivante]";
+    if (target.matches('.slide-btn[data-regis-nav="prev"]')) return "[Action détectée : Relecture compulsive / Retour sur indice]";
+    if (target.matches('.terminal-gate-replay')) return "[Action détectée : Vérification anxieuse répétée]";
+
+    return "[Action détectée : Interaction instrumentale sous observation]";
+}
+
+function initializeMadisonParallax() {
+    const windowArea = document.getElementById('window-area');
+    if (!windowArea) return;
+
+    const onPointerMove = (event) => {
+        const offsetX = ((window.innerWidth / 2) - event.clientX) / window.innerWidth;
+        const offsetY = ((window.innerHeight / 2) - event.clientY) / window.innerHeight;
+        windowArea.style.setProperty('--madison-parallax-x', `${(offsetX * 6).toFixed(2)}px`);
+        windowArea.style.setProperty('--madison-parallax-y', `${(offsetY * 4).toFixed(2)}px`);
+    };
+
+    desktopRuntime.parallaxHandler = onPointerMove;
+    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    onPointerMove({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 });
 }
 
 function initializeEmilyGlitch() {
@@ -287,6 +537,30 @@ function initializeEmilyIdleAudio() {
     resetIdleTimer();
 }
 
+function initializeEmilyDread() {
+    const overlay = document.getElementById('emily-dread-overlay');
+    const profile = getCurrentDesktopProfile("e.carter");
+    if (!overlay) return;
+
+    overlay.hidden = false;
+    overlay.style.opacity = '0';
+    desktopRuntime.dreadStartTime = Date.now();
+
+    const tick = () => {
+        if (currentUser !== "e.carter") return;
+
+        const elapsed = Date.now() - desktopRuntime.dreadStartTime;
+        const progress = Math.min(elapsed / (profile.dreadDurationMs || 180000), 1);
+        overlay.style.opacity = String(progress * (profile.dreadMaxOpacity || 0.5));
+
+        if (progress < 1) {
+            desktopRuntime.dreadFrame = window.requestAnimationFrame(tick);
+        }
+    };
+
+    desktopRuntime.dreadFrame = window.requestAnimationFrame(tick);
+}
+
 function cleanupDesktopRuntime() {
     if (desktopRuntime.glitchTimer) {
         window.clearTimeout(desktopRuntime.glitchTimer);
@@ -308,6 +582,26 @@ function cleanupDesktopRuntime() {
         desktopRuntime.idleAudio = null;
     }
 
+    if (desktopRuntime.notificationTimer) {
+        window.clearTimeout(desktopRuntime.notificationTimer);
+        desktopRuntime.notificationTimer = null;
+    }
+
+    if (desktopRuntime.cursorTrailRAF) {
+        window.cancelAnimationFrame(desktopRuntime.cursorTrailRAF);
+        desktopRuntime.cursorTrailRAF = null;
+    }
+
+    if (desktopRuntime.cursorTrailHandler) {
+        window.removeEventListener('pointermove', desktopRuntime.cursorTrailHandler);
+        desktopRuntime.cursorTrailHandler = null;
+    }
+
+    if (desktopRuntime.dreadFrame) {
+        window.cancelAnimationFrame(desktopRuntime.dreadFrame);
+        desktopRuntime.dreadFrame = null;
+    }
+
     if (desktopRuntime.activityHandler) {
         desktopRuntime.activityEvents.forEach((eventName) => {
             window.removeEventListener(eventName, desktopRuntime.activityHandler, { passive: eventName !== 'keydown' });
@@ -316,10 +610,73 @@ function cleanupDesktopRuntime() {
 
     desktopRuntime.activityHandler = null;
     desktopRuntime.activityEvents = [];
+    desktopRuntime.cursorTrailNodes = [];
+
+    desktopRuntime.tooltipHandlers.forEach(([eventName, handler]) => {
+        document.removeEventListener(eventName, handler);
+    });
+    desktopRuntime.tooltipHandlers = [];
+
+    if (desktopRuntime.tooltipTimer) {
+        window.clearTimeout(desktopRuntime.tooltipTimer);
+        desktopRuntime.tooltipTimer = null;
+    }
+
+    desktopRuntime.activeTooltipTarget = null;
+
+    if (desktopRuntime.parallaxHandler) {
+        window.removeEventListener('pointermove', desktopRuntime.parallaxHandler);
+        desktopRuntime.parallaxHandler = null;
+    }
 
     document.body.classList.remove('is-regis-glitch');
     const codeNode = document.querySelector('.regis-glitch-code');
     if (codeNode) codeNode.textContent = "";
+
+    const notificationStack = document.getElementById('system-notification-stack');
+    if (notificationStack) {
+        notificationStack.innerHTML = "";
+        notificationStack.hidden = true;
+    }
+
+    const trailLayer = document.getElementById('cursor-trail-layer');
+    if (trailLayer) {
+        trailLayer.innerHTML = "";
+        trailLayer.hidden = true;
+    }
+
+    const tooltip = document.getElementById('madison-tooltip');
+    if (tooltip) {
+        tooltip.classList.remove('is-visible');
+        tooltip.hidden = true;
+        tooltip.textContent = "";
+    }
+
+    const windowArea = document.getElementById('window-area');
+    if (windowArea) {
+        windowArea.style.removeProperty('--madison-parallax-x');
+        windowArea.style.removeProperty('--madison-parallax-y');
+    }
+
+    const dreadOverlay = document.getElementById('emily-dread-overlay');
+    if (dreadOverlay) {
+        dreadOverlay.hidden = true;
+        dreadOverlay.style.opacity = '0';
+    }
+}
+
+function playProfileSelectSound(options = {}) {
+    const profile = getCurrentDesktopProfile();
+    const selectSound = profile.selectSound || {
+        name: 'uiSelect',
+        volume: 0.12,
+        playbackRate: 0.82
+    };
+
+    window.registreAudio?.play(selectSound.name, {
+        volume: typeof options.volume === 'number' ? options.volume : selectSound.volume,
+        playbackRate: typeof options.playbackRate === 'number' ? options.playbackRate : selectSound.playbackRate
+    });
 }
 
 function createWindow(appId, title, width = 600, height = 400, minWidth = 340, minHeight = 250) {
@@ -464,10 +821,7 @@ function closeWindow(win) {
     if (typeof win._cleanup === 'function') {
         win._cleanup();
     }
-    window.registreAudio?.play('uiSelect', {
-        volume: 0.12,
-        playbackRate: 0.82
-    });
+    playProfileSelectSound();
     win.remove();
     setAppButtonState(appId, false);
     setAppPendingState(appId, false);
