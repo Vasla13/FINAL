@@ -585,27 +585,32 @@ body[data-profile="n.bennett"] * {
 }
 
 body[data-profile="m.brooks"] #window-area {
-    background: linear-gradient(180deg, #1a221f 0%, #111814 100%);
+    background:
+        linear-gradient(180deg, rgba(10, 13, 12, 0.78) 0%, rgba(7, 10, 9, 0.96) 100%),
+        #0e1110;
 }
 
 body[data-profile="m.brooks"] #window-area::before {
     background:
-        radial-gradient(circle at 36% 38%, rgba(197, 208, 195, 0.08), transparent 11%),
-        radial-gradient(circle at 64% 38%, rgba(197, 208, 195, 0.08), transparent 11%),
-        radial-gradient(circle at 30% 61%, rgba(197, 208, 195, 0.06), transparent 14%),
-        radial-gradient(circle at 70% 61%, rgba(197, 208, 195, 0.06), transparent 14%),
-        radial-gradient(circle at 50% 52%, rgba(197, 208, 195, 0.045), transparent 22%),
-        radial-gradient(circle at 50% 50%, rgba(7, 10, 9, 0.52), transparent 48%);
-    filter: blur(15px);
-    opacity: 0.6;
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 22%, rgba(0, 0, 0, 0.18) 100%),
+        url("../assets/wallpapers/MADISON BROOKS.png") center center / cover no-repeat;
+    filter: grayscale(1) contrast(1.06) brightness(0.78);
+    opacity: 0.82;
     transform: translate(var(--madison-parallax-x, 0px), var(--madison-parallax-y, 0px));
     transition: transform 0.18s ease-out;
 }
 
 body[data-profile="m.brooks"] #window-area::after {
     background:
-        radial-gradient(circle at center, transparent 48%, rgba(0, 0, 0, 0.38) 100%),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.03) 0%, transparent 18%, transparent 82%, rgba(0, 0, 0, 0.16) 100%);
+        radial-gradient(circle at center, transparent 34%, rgba(0, 0, 0, 0.36) 68%, rgba(0, 0, 0, 0.72) 100%),
+        repeating-linear-gradient(
+            180deg,
+            rgba(255, 255, 255, 0.028) 0,
+            rgba(255, 255, 255, 0.028) 1px,
+            transparent 1px,
+            transparent 5px
+        ),
+        linear-gradient(180deg, rgba(245, 252, 245, 0.03) 0%, transparent 22%, transparent 80%, rgba(0, 0, 0, 0.24) 100%);
 }
 
 body[data-profile="m.brooks"] #topbar,
@@ -658,7 +663,8 @@ body[data-profile="o.reynolds"] .app-link::before {
 
 body[data-profile="o.reynolds"] #window-area {
     background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, transparent 18%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 22%, rgba(0, 0, 0, 0.08) 100%),
+        url("../assets/wallpapers/OLIVIA REYNOLDS.png") center center / cover no-repeat,
         linear-gradient(180deg, #d3ccbf 0%, #c6bfb2 100%);
 }
 
@@ -669,14 +675,14 @@ body[data-profile="o.reynolds"] #window-area::before {
     font-size: clamp(120px, 16vw, 260px);
     font-weight: 700;
     letter-spacing: 18px;
-    color: rgba(94, 88, 79, 0.14);
-    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.08);
+    color: rgba(94, 88, 79, 0.12);
+    text-shadow: 0 2px 0 rgba(255, 255, 255, 0.04);
 }
 
 body[data-profile="o.reynolds"] #window-area::after {
     background:
-        radial-gradient(circle at 20% 16%, rgba(255, 255, 255, 0.08), transparent 22%),
-        linear-gradient(180deg, rgba(88, 77, 61, 0.05) 0%, transparent 26%, transparent 82%, rgba(255, 255, 255, 0.04) 100%);
+        radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.12), transparent 18%),
+        linear-gradient(180deg, rgba(255, 249, 234, 0.09) 0%, transparent 28%, transparent 78%, rgba(78, 66, 52, 0.12) 100%);
 }
 
 body[data-profile="o.reynolds"] #desk-note {
@@ -719,13 +725,17 @@ body[data-profile="e.carter"] .app-link.is-open {
 }
 
 body[data-profile="e.carter"] #window-area {
-    background: #000;
+    background:
+        linear-gradient(180deg, rgba(0, 0, 0, 0.18) 0%, rgba(0, 0, 0, 0.72) 100%),
+        url("../assets/wallpapers/EMILY CARTER.png") center center / cover no-repeat,
+        #000;
 }
 
 body[data-profile="e.carter"] #window-area::before {
     background:
-        radial-gradient(circle at 78% 18%, rgba(255, 52, 52, 0.08), transparent 16%),
-        linear-gradient(180deg, rgba(118, 255, 113, 0.04) 0%, transparent 14%);
+        radial-gradient(circle at 18% 34%, rgba(118, 255, 113, 0.08), transparent 18%),
+        radial-gradient(circle at 82% 22%, rgba(255, 52, 52, 0.12), transparent 18%),
+        linear-gradient(180deg, rgba(118, 255, 113, 0.04) 0%, transparent 16%, rgba(255, 79, 79, 0.05) 100%);
 }
 
 body.is-app-loading,
